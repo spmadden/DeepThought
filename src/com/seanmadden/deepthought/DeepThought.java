@@ -12,7 +12,6 @@
 
 package com.seanmadden.deepthought;
 
-import java.util.Collection;
 import java.util.Vector;
 
 import org.apache.log4j.BasicConfigurator;
@@ -20,6 +19,7 @@ import org.apache.log4j.Logger;
 
 import com.seanmadden.deepthought.responders.LMGTFYResponder;
 import com.seanmadden.deepthought.responders.PingResponder;
+import com.seanmadden.deepthought.responders.QuoteResponder;
 
 /**
  * This class is the main entry point into the DeepThought IRC bot.
@@ -28,12 +28,9 @@ import com.seanmadden.deepthought.responders.PingResponder;
  */
 public class DeepThought implements MessageObserver{
 	
-	private boolean run = true;
-	
 	private static Logger log = Logger.getLogger(DeepThought.class);
 	
 	private Vector<MessageHandler> handlers = new Vector<MessageHandler>();
-	
 	private IRCClient irc = null;
 	
 	public DeepThought(){
@@ -46,8 +43,9 @@ public class DeepThought implements MessageObserver{
 		irc.addCallback("PING", this);
 		this.handlers.add(new PingResponder());
 		this.handlers.add(new LMGTFYResponder());
+		this.handlers.add(new QuoteResponder());
 		
-		irc.getChannels().add("#test");
+		irc.getChannels().add("#interns");
 		
 		irc.start();
 	}

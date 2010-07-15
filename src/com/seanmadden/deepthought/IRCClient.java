@@ -36,7 +36,7 @@ public class IRCClient extends Thread {
 	private BufferedWriter writer = null;
 	private BufferedReader reader = null;
 
-	private String server = "irc.seanmadden.net";
+	private String server = "irc.pc.factset.com";
 	private int port = 6667;
 	private String realname = "ImmaBOT";
 	private String host = "LOCALHOST...Duh";
@@ -77,8 +77,8 @@ public class IRCClient extends Thread {
 				+ this.host + " " + this.server + " " + this.realname);
 		this.sendMessage(nick);
 		this.sendMessage(user);
-		
-		for(String channel : this.channels){
+
+		for (String channel : this.channels) {
 			Message chan = new Message("", "JOIN", "", channel);
 			this.sendMessage(chan);
 		}
@@ -88,9 +88,11 @@ public class IRCClient extends Thread {
 				String message = reader.readLine();
 				final Message m = Message.fromString(message);
 				if (m.getMethod().equals("PRIVMSG")) {
-					messageHistory.push(m);
-					while (messageHistory.size() > 50) {
-						messageHistory.removeLast();
+					synchronized (this) {
+						messageHistory.push(m);
+						while (messageHistory.size() > 50) {
+							messageHistory.removeLast();
+						}
 					}
 				}
 				if (calls.containsKey(m.getMethod())) {
@@ -119,7 +121,7 @@ public class IRCClient extends Thread {
 			log.debug("SENDING: " + m.toString());
 			writer.append(m.toString());
 			writer.flush();
-
+			messageHistory.push(m);
 		} catch (IOException e) {
 			log.error(e.getMessage());
 			return false;
@@ -127,14 +129,13 @@ public class IRCClient extends Thread {
 		return true;
 	}
 
-	public void addCallback(String method, MessageObserver cb){
-		if(!this.calls.contains(method)){
+	public void addCallback(String method, MessageObserver cb) {
+		if (!this.calls.contains(method)) {
 			this.calls.put(method, new Vector<MessageObserver>());
 		}
 		this.calls.get(method).add(cb);
 	}
-	
-	
+
 	/**
 	 * Returns the server
 	 * 
@@ -273,6 +274,15 @@ public class IRCClient extends Thread {
 	public void setChannels(Vector<String> channels) {
 		log.debug("Setting channels to: " + channels);
 		this.channels = channels;
+	}
+
+	/**
+	 * Returns the messageHistory
+	 * 
+	 * @return messageHistory the messageHistory
+	 */
+	public LinkedList<Message> getMessageHistory() {
+		return messageHistory;
 	}
 
 }
