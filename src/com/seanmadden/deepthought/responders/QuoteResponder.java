@@ -12,6 +12,7 @@
 
 package com.seanmadden.deepthought.responders;
 
+import java.util.Collections;
 import java.util.List;
 
 import com.seanmadden.chirpy.Chirpy;
@@ -67,8 +68,11 @@ public class QuoteResponder implements MessageHandler {
 				int num = Integer.valueOf(components[2]);
 				List<Message> messages = irc.getMessageHistory().subList(1, num+1);
 				String concat = "";
+				Collections.reverse(messages);
 				for(Message msg : messages){
-					concat += "<" + msg.getUsermask()+"> " + msg.getMessage() + "\r\n";
+					if(msg.getMethod().equals("PRIVMSG")){
+						concat += "<" + msg.getUsermask()+"> " + msg.getMessage() + "\r\n";
+					}
 				}
 				String result = chirpy.add(concat, "Submitted by " + m.getUsermask(), "");
 				Message msg = new Message("", "PRIVMSG", result, m.getTarget());

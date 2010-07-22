@@ -86,6 +86,7 @@ public class IRCClient extends Thread {
 		while (sock.isConnected()) {
 			try {
 				String message = reader.readLine();
+				log.debug(message);
 				final Message m = Message.fromString(message);
 				if (m.getMethod().equals("PRIVMSG")) {
 					synchronized (this) {
