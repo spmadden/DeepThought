@@ -42,6 +42,7 @@ public class IRCClient extends Thread {
 	private String host = "LOCALHOST...Duh";
 	private String username = "Bottastic";
 	private String nick = "DeepThought";
+	private String identpass = "pdntspa";
 	private Vector<String> channels = new Vector<String>();
 
 	private LinkedList<Message> messageHistory = new LinkedList<Message>();
@@ -75,8 +76,10 @@ public class IRCClient extends Thread {
 		Message nick = new Message("", "NICK", "", this.nick);
 		Message user = new Message("", "USER", "", this.username + " "
 				+ this.host + " " + this.server + " " + this.realname);
+		Message ident = new Message("", "PRIVMSG", "identify " + identpass, "nickserv");
 		this.sendMessage(nick);
 		this.sendMessage(user);
+		this.sendMessage(ident);
 
 		for (String channel : this.channels) {
 			Message chan = new Message("", "JOIN", "", channel);
@@ -122,6 +125,7 @@ public class IRCClient extends Thread {
 			log.debug("SENDING: " + m.toString());
 			writer.append(m.toString());
 			writer.flush();
+			m.setUsermask(this.getNick());
 			messageHistory.push(m);
 		} catch (IOException e) {
 			log.error(e.getMessage());

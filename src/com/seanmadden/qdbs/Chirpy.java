@@ -10,7 +10,7 @@
  *
  */
 
-package com.seanmadden.chirpy;
+package com.seanmadden.qdbs;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -57,7 +57,7 @@ public class Chirpy extends HTMLEditorKit.ParserCallback{
 			response += "&" + notes;
 			response += "&" + tags;
 			response += "\r\n";
-			System.out.println(response);
+			//System.out.println(response);
 			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(is));
 			writer.write(response);
 			writer.close();
@@ -89,7 +89,7 @@ public class Chirpy extends HTMLEditorKit.ParserCallback{
 						
 			BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 			StringBuffer buf = new StringBuffer();
-			while(reader.ready()){
+			while(reader.ready() || buf.length() == 0){
 				buf.append(reader.readLine());
 			}
 			String result = buf.toString();

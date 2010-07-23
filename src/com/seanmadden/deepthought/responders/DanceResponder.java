@@ -24,11 +24,13 @@ public class DanceResponder implements MessageHandler {
 			return false;
 		}
 		String[] message = {
-				"DANCE?  OKAY!",
+			/*	"DANCE?  OKAY!",
 				"\u0001ACTION dances\u0001",
-				"\u0001ACTION (>'.'>)\u0001",
-				"\u0001ACTION (7'.'7)\u0001",
+				"\u0001ACTION (>'.')>\u0001",
+				"\u0001ACTION (7'.')7\u0001",
 				"\u0001ACTION <('.'7)\u0001",
+				*/
+				"Sean says I can't dance anymore, I break things =/"
 				};
 		for(String action : message){
 			Message msg = new Message("", "PRIVMSG", action, m.getTarget());

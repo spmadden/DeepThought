@@ -15,10 +15,11 @@ package com.seanmadden.deepthought.responders;
 import java.util.Collections;
 import java.util.List;
 
-import com.seanmadden.chirpy.Chirpy;
 import com.seanmadden.deepthought.IRCClient;
 import com.seanmadden.deepthought.Message;
 import com.seanmadden.deepthought.MessageHandler;
+import com.seanmadden.qdbs.Chirpy;
+import com.seanmadden.qdbs.Xkcdb;
 
 /**
  * This class accesses the chirpy quote database.
@@ -26,11 +27,8 @@ import com.seanmadden.deepthought.MessageHandler;
  * @author Sean P Madden
  */
 public class QuoteResponder implements MessageHandler {
-	private Chirpy chirpy;
-	
-	public QuoteResponder(){
-		chirpy = new Chirpy("quotes.seanmadden.net");
-	}
+	private Chirpy chirpy = new Chirpy("quotes.seanmadden.net");
+	private Xkcdb xkcdb = new Xkcdb();
 	
 	/**
 	 * Handle the message.
@@ -43,8 +41,29 @@ public class QuoteResponder implements MessageHandler {
 	@Override
 	public boolean handleMessage(IRCClient irc, Message m) {
 		String message = m.getMessage();
-		if(!message.contains("!quote")){
+		
+		if(!message.contains("!quote") && !message.contains("!xkcdb")){
 			return false;
+		}
+		if(message.contains("!xkcdb")){
+			message = message.substring(message.indexOf("!xkcdb") + 6).trim();
+			System.out.println(message);
+			try{
+				int num = Integer.parseInt(message);
+				if(num <= 0){
+					Message msg = new Message("", "PRIVMSG", m.getUsermask() + ": What?", m.getTarget());
+					irc.sendMessage(msg);
+					return true;
+				}
+				message = xkcdb.get(message);
+				Message msg = new Message("", "PRIVMSG", message, m.getTarget());
+				irc.sendMessage(msg);
+				return true;
+			}catch(NumberFormatException e){
+				Message msg = new Message("", "PRIVMSG", m.getUsermask() + ": What?", m.getTarget());
+				irc.sendMessage(msg);
+				return true;
+			}
 		}
 		message = message.substring(message.indexOf("!quote"));
 		/*
@@ -66,7 +85,7 @@ public class QuoteResponder implements MessageHandler {
 		}else if(components[1].equals("addlast")){
 			try{
 				int num = Integer.valueOf(components[2]);
-				List<Message> messages = irc.getMessageHistory().subList(1, num+1);
+				List<Message> messages = irc.getMessageHistory().subList(1, num+2);
 				String concat = "";
 				Collections.reverse(messages);
 				for(Message msg : messages){

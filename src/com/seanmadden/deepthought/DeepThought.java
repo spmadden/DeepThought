@@ -17,12 +17,16 @@ import java.util.Vector;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
+import com.seanmadden.deepthought.responders.BotsnackResponder;
 import com.seanmadden.deepthought.responders.DanceResponder;
+import com.seanmadden.deepthought.responders.DiceResponder;
 import com.seanmadden.deepthought.responders.LMGTFYResponder;
 import com.seanmadden.deepthought.responders.LoveResponder;
+import com.seanmadden.deepthought.responders.ManPageResponder;
 import com.seanmadden.deepthought.responders.PingResponder;
 import com.seanmadden.deepthought.responders.QuestionResponder;
 import com.seanmadden.deepthought.responders.QuoteResponder;
+import com.seanmadden.deepthought.responders.SayResponder;
 import com.seanmadden.deepthought.responders.WikiResponder;
 
 /**
@@ -46,11 +50,15 @@ public class DeepThought implements MessageObserver {
 		irc.addCallback("PRIVMSG", this);
 		irc.addCallback("PING", this);
 		this.handlers.add(new PingResponder());
+		this.handlers.add(new SayResponder());
 		this.handlers.add(new LMGTFYResponder());
 		this.handlers.add(new QuoteResponder());
 		this.handlers.add(new WikiResponder());
+		this.handlers.add(new ManPageResponder());
+		this.handlers.add(new DiceResponder());
 		this.handlers.add(new DanceResponder());
 		this.handlers.add(new LoveResponder());
+		this.handlers.add(new BotsnackResponder());
 		this.handlers.add(new QuestionResponder());
 		
 
@@ -80,7 +88,7 @@ public class DeepThought implements MessageObserver {
 
 		log.debug("Staring Bot");
 		dt.run();
-
+		
 	}
 
 	@Override
