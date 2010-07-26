@@ -35,7 +35,7 @@ public class ManPageResponder implements MessageHandler {
 		try {
 			url += URLEncoder.encode(page, "UTF-8");
 			url = bitly.shorten(url);
-			Message msg = new Message("", "PRIVMSG", m.getUsermask()+": " + url, m.getTarget());
+			Message msg = new Message( m.getUsermask()+": " + url, m.getTarget());
 			irc.sendMessage(msg);
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();

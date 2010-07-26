@@ -47,7 +47,7 @@ public class QuestionResponder implements MessageHandler {
 			String opts[] = options.split(" or ");
 			int choice = new Random().nextInt(opts.length);
 			String response = m.getUsermask() + ": " + opts[choice];
-			Message msg = new Message("", "PRIVMSG", response, m.getTarget());
+			Message msg = new Message(response, m.getTarget());
 			irc.sendMessage(msg);
 			return true;
 		}
@@ -57,13 +57,12 @@ public class QuestionResponder implements MessageHandler {
 					&& message.length() > q.length()) {
 				int choice = new Random().nextInt(responses.length);
 				String response = m.getUsermask() + ": " + responses[choice];
-				Message msg = new Message("", "PRIVMSG", response, m
-						.getTarget());
+				Message msg = new Message(response, m.getTarget());
 				irc.sendMessage(msg);
 				return true;
 			}
 		}
-		Message msg = new Message("", "PRIVMSG", "You rang?", m.getTarget());
+		Message msg = new Message("You rang?", m.getTarget());
 		irc.sendMessage(msg);
 		return false;
 	}

@@ -51,16 +51,16 @@ public class QuoteResponder implements MessageHandler {
 			try{
 				int num = Integer.parseInt(message);
 				if(num <= 0){
-					Message msg = new Message("", "PRIVMSG", m.getUsermask() + ": What?", m.getTarget());
+					Message msg = new Message(m.getUsermask() + ": What?", m.getTarget());
 					irc.sendMessage(msg);
 					return true;
 				}
 				message = xkcdb.get(message);
-				Message msg = new Message("", "PRIVMSG", message, m.getTarget());
+				Message msg = new Message(message, m.getTarget());
 				irc.sendMessage(msg);
 				return true;
 			}catch(NumberFormatException e){
-				Message msg = new Message("", "PRIVMSG", m.getUsermask() + ": What?", m.getTarget());
+				Message msg = new Message(m.getUsermask() + ": What?", m.getTarget());
 				irc.sendMessage(msg);
 				return true;
 			}
@@ -80,7 +80,7 @@ public class QuoteResponder implements MessageHandler {
 		
 		if(components[1].equals("add")){
 			String result = chirpy.add(components[2], "Submitted by " + m.getUsermask(), "");
-			Message msg = new Message("", "PRIVMSG", result, m.getTarget());
+			Message msg = new Message(result, m.getTarget());
 			irc.sendMessage(msg);
 		}else if(components[1].equals("addlast")){
 			try{
@@ -94,10 +94,10 @@ public class QuoteResponder implements MessageHandler {
 					}
 				}
 				String result = chirpy.add(concat, "Submitted by " + m.getUsermask(), "");
-				Message msg = new Message("", "PRIVMSG", result, m.getTarget());
+				Message msg = new Message(result, m.getTarget());
 				irc.sendMessage(msg);
 			}catch(Exception e){
-				Message msg = new Message("", "PRIVMSG", m.getUsermask() + ": That's not a number!", m.getTarget());
+				Message msg = new Message(m.getUsermask() + ": That's not a number!", m.getTarget());
 				irc.sendMessage(msg);
 				return true;
 			}
@@ -106,12 +106,12 @@ public class QuoteResponder implements MessageHandler {
 			try{
 				Integer.valueOf(components[2]);
 			}catch(Exception e){
-				Message msg = new Message("", "PRIVMSG", m.getUsermask() + ": That's not a number!", m.getTarget());
+				Message msg = new Message(m.getUsermask() + ": That's not a number!", m.getTarget());
 				irc.sendMessage(msg);
 				return true;
 			}
 			String result = chirpy.get(components[2]);
-			Message msg = new Message("", "PRIVMSG", result, m.getTarget());
+			Message msg = new Message(result, m.getTarget());
 			irc.sendMessage(msg);
 		}
 		
@@ -130,7 +130,7 @@ public class QuoteResponder implements MessageHandler {
 			//"!quote queryword <word> : Searches for quotes with <word> in them and returns the IDs.",
 			//"!quote querytag <tag> : Searches for quotes with the tag <tag> and returns the IDs."
 		};
-		Message msg = new Message("", "PRIVMSG", "", m.getUsermask());
+		Message msg = new Message("", m.getUsermask());
 		for(String line : halp){
 			msg.setMessage(line);
 			irc.sendMessage(msg);

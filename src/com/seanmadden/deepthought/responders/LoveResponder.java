@@ -25,7 +25,7 @@ public class LoveResponder implements MessageHandler {
 			return false;
 		}
 		String response = "NO LOVE FOR " + m.getUsermask();
-		Message msg = new Message("", "PRIVMSG", response, m.getTarget());
+		Message msg = new Message(response, m.getTarget());
 		irc.sendMessage(msg);
 		return true;
 	}

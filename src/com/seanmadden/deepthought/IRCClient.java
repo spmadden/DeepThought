@@ -36,7 +36,7 @@ public class IRCClient extends Thread {
 	private BufferedWriter writer = null;
 	private BufferedReader reader = null;
 
-	private String server = "irc.pc.factset.com";
+	private String server = "irc.thesse.org";
 	private int port = 6667;
 	private String realname = "ImmaBOT";
 	private String host = "LOCALHOST...Duh";
@@ -73,16 +73,16 @@ public class IRCClient extends Thread {
 			return;
 		}
 
-		Message nick = new Message("", "NICK", "", this.nick);
-		Message user = new Message("", "USER", "", this.username + " "
+		Message nick = new Message("NICK", "", this.nick);
+		Message user = new Message("USER", "", this.username + " "
 				+ this.host + " " + this.server + " " + this.realname);
-		Message ident = new Message("", "PRIVMSG", "identify " + identpass, "nickserv");
+		Message ident = new Message("identify " + identpass, "nickserv");
 		this.sendMessage(nick);
 		this.sendMessage(user);
 		this.sendMessage(ident);
 
 		for (String channel : this.channels) {
-			Message chan = new Message("", "JOIN", "", channel);
+			Message chan = new Message("JOIN", "", channel);
 			this.sendMessage(chan);
 		}
 

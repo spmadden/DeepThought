@@ -33,7 +33,7 @@ public class DanceResponder implements MessageHandler {
 				"Sean says I can't dance anymore, I break things =/"
 				};
 		for(String action : message){
-			Message msg = new Message("", "PRIVMSG", action, m.getTarget());
+			Message msg = new Message(action, m.getTarget());
 			irc.sendMessage(msg);
 		}
 		

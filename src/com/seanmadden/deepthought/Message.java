@@ -31,7 +31,15 @@ public class Message {
 	 * @param message
 	 * @param target
 	 */
-	public Message(String usermask, String method, String message, String target) {
+	public Message(String message, String target) {
+		this("", "PRIVMSG", message, target);
+		
+	}
+	
+	public Message(String method, String message, String target){
+		this("", method, message, target);
+	}
+	public Message(String usermask, String method, String message, String target){
 		this.usermask = usermask;
 		this.method = method;
 		this.message = message;

@@ -26,7 +26,7 @@ public class PingResponder implements MessageHandler {
 	@Override
 	public boolean handleMessage(IRCClient irc, Message m) {
 		if (m.getMethod().equals("PING")) {
-			Message mesg = new Message("", "PONG", m.getTarget(), "");
+			Message mesg = new Message("PONG", m.getTarget(), "");
 			irc.sendMessage(mesg);
 			return true;
 		}

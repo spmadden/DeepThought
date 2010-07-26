@@ -17,17 +17,7 @@ import java.util.Vector;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
-import com.seanmadden.deepthought.responders.BotsnackResponder;
-import com.seanmadden.deepthought.responders.DanceResponder;
-import com.seanmadden.deepthought.responders.DiceResponder;
-import com.seanmadden.deepthought.responders.LMGTFYResponder;
-import com.seanmadden.deepthought.responders.LoveResponder;
-import com.seanmadden.deepthought.responders.ManPageResponder;
-import com.seanmadden.deepthought.responders.PingResponder;
-import com.seanmadden.deepthought.responders.QuestionResponder;
-import com.seanmadden.deepthought.responders.QuoteResponder;
-import com.seanmadden.deepthought.responders.SayResponder;
-import com.seanmadden.deepthought.responders.WikiResponder;
+import com.seanmadden.deepthought.responders.*;
 
 /**
  * This class is the main entry point into the DeepThought IRC bot.
@@ -53,12 +43,13 @@ public class DeepThought implements MessageObserver {
 		this.handlers.add(new SayResponder());
 		this.handlers.add(new LMGTFYResponder());
 		this.handlers.add(new QuoteResponder());
-		this.handlers.add(new WikiResponder());
 		this.handlers.add(new ManPageResponder());
+		this.handlers.add(new WikiResponder());
 		this.handlers.add(new DiceResponder());
-		this.handlers.add(new DanceResponder());
 		this.handlers.add(new LoveResponder());
-		this.handlers.add(new BotsnackResponder());
+		//this.handlers.add(new DanceResponder());
+		//this.handlers.add(new BotsnackResponder());
+		this.handlers.add(new FactoidResponder());
 		this.handlers.add(new QuestionResponder());
 		
 
@@ -68,7 +59,7 @@ public class DeepThought implements MessageObserver {
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			public void run() {
 				for (String channel : irc.getChannels()) {
-					Message m = new Message("", "PRIVMSG", "blargh i am ded",
+					Message m = new Message("blargh i am ded",
 							channel);
 					irc.sendMessage(m);
 				}

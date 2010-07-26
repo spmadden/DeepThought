@@ -24,7 +24,7 @@ public class BotsnackResponder implements MessageHandler {
 		if(!message.toLowerCase().contains("botsnack")){
 			return false;
 		}
-		Message msg = new Message("", "PRIVMSG", ":D", m.getTarget());
+		Message msg = new Message(":D", m.getTarget());
 		irc.sendMessage(msg);
 		return true;
 	}

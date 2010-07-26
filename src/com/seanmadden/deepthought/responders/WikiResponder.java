@@ -42,7 +42,7 @@ public class WikiResponder implements MessageHandler {
 			e.printStackTrace();
 		}
 		
-		Message mesg = new Message("", "PRIVMSG", wiki, m.getTarget());
+		Message mesg = new Message(wiki, m.getTarget());
 		irc.sendMessage(mesg);
 		return true;
 	}

@@ -6,5 +6,6 @@
 	<classpathentry kind="lib" path="C:/TOOLS/json/JSON.jar"/>
 	<classpathentry kind="lib" path="libs/jsoup-1.2.2.jar"/>
 	<classpathentry kind="lib" path="libs/commons-lang-2.5.jar"/>
+	<classpathentry kind="lib" path="libs/sqlite-jdbc-3.6.20.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
