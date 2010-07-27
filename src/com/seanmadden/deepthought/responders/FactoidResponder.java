@@ -124,6 +124,7 @@ public class FactoidResponder implements MessageHandler {
 			String response = set.getString("response");
 			String action = set.getString("action");
 			String trigger = set.getString("trigger").replaceAll("%", "");
+			response = response.replaceAll("$who", m.getUsermask());
 			set.close();
 			if (response.equals("")) {
 				return false;
@@ -160,7 +161,7 @@ public class FactoidResponder implements MessageHandler {
 		s.close();
 		conn.commit();
 		conn.setAutoCommit(true);
-		Message msg = new Message("Okay, " + m.getUsermask(), m
+		Message msg = new Message("As you wish, " + m.getUsermask(), m
 				.getTarget());
 		irc.sendMessage(msg);
 		

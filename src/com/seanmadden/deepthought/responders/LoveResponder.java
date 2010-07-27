@@ -24,6 +24,9 @@ public class LoveResponder implements MessageHandler {
 		if(!message.toLowerCase().contains("love")){
 			return false;
 		}
+		if(message.toLowerCase().contains(irc.getNick())){
+			return false;
+		}
 		String response = "NO LOVE FOR " + m.getUsermask();
 		Message msg = new Message(response, m.getTarget());
 		irc.sendMessage(msg);
