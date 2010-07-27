@@ -42,12 +42,12 @@ public class DiceResponder implements MessageHandler {
 			String[] fmt = dice.split("d", 2);
 			int die = Integer.parseInt(fmt[0]);
 			int sides = Integer.parseInt(fmt[1]);
-			if(die > 30 || die <= 1){
+			if(die > 30 || die < 1){
 				Message msg = new Message(m.getUsermask() + ": No.", m.getTarget());
 				irc.sendMessage(msg);
 				return true;
 			}
-			if(sides > 9999 || sides <= 1){
+			if(sides > 9999 || sides < 1){
 				Message msg = new Message(m.getUsermask() + ": No.", m.getTarget());
 				irc.sendMessage(msg);
 				return true;
@@ -56,7 +56,7 @@ public class DiceResponder implements MessageHandler {
 			int total = 0;
 			Random r = new Random();
 			for(int i = 0; i < die; ++i){
-				int res = r.nextInt(sides);
+				int res = r.nextInt(sides)+1;
 				response += res + " ";
 				total += res;
 			}
