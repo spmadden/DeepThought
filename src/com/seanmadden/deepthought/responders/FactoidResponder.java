@@ -14,12 +14,14 @@ package com.seanmadden.deepthought.responders;
 
 import java.sql.*;
 import java.util.Random;
+import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.seanmadden.deepthought.IRCClient;
 import com.seanmadden.deepthought.Message;
 import com.seanmadden.deepthought.MessageHandler;
+import com.seanmadden.deepthought.responders.factoidcommands.*;
 
 /**
  * [Insert class description here]
@@ -28,7 +30,17 @@ import com.seanmadden.deepthought.MessageHandler;
  */
 public class FactoidResponder implements MessageHandler {
 	private Connection conn = null;
+	private int lastID = 0;
 
+	private Vector<FactoidCommand> commands = new Vector<FactoidCommand>(){
+		private static final long serialVersionUID = 6257238308939609540L;
+
+		{
+			add(new LiteralCommand(FactoidResponder.this));
+			add(new QueryCommand(FactoidResponder.this));
+		}
+	};
+	
 	private Pattern IS = Pattern.compile(".*[,:] (.+) is (.+)");
 	private Pattern ARE = Pattern.compile(".*[,:] (.+) are (.+)");
 	private Pattern ACTION = Pattern.compile(".*[,:] (.+) <(.+)> (.+)");
@@ -57,6 +69,12 @@ public class FactoidResponder implements MessageHandler {
 	@Override
 	public boolean handleMessage(IRCClient irc, Message m) {
 		String message = m.getMessage();
+		for(FactoidCommand c : this.commands){
+			if(c.checkCommand(message, irc)){
+				return true;
+			}
+		}
+		
 		if (message.contains(irc.getNick())) {
 			Matcher match = IS.matcher(message);
 			if (match.matches()) {
@@ -124,12 +142,14 @@ public class FactoidResponder implements MessageHandler {
 			String response = set.getString("response");
 			String action = set.getString("action");
 			String trigger = set.getString("trigger").replaceAll("%", "");
-			response = response.replaceAll("$who", m.getUsermask());
+			response = response.replaceAll("\\$who", m.getUsermask());
+			int id = set.getInt("id");
 			set.close();
 			if (response.equals("")) {
 				return false;
 			}
 			
+			this.lastID = id;
 			if(response.contains("<reply>")){
 				response = response.replaceAll("<reply>", "").trim();
 			}else if(response.contains("<action>")){
