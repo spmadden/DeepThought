@@ -22,23 +22,21 @@ public class DiceResponder implements MessageHandler {
 
 	@Override
 	public boolean handleMessage(IRCClient irc, Message m) {
-		String message = m.getMessage();
-		if(!message.contains(irc.getNick())){
-			return false;
+		String message = m.getMessage().trim();
+		if(!message.startsWith("!roll")){
+			if(message.startsWith(irc.getNick()) && message.contains("roll")){
+				message = message.substring(message.indexOf("roll")).trim();
+			}else{
+				return false;
+			}
 		}
-		if(!message.contains("roll")){
-			return false;
-		}
-		String[] args = message.split(" ", 3);
-		if(args.length != 3){
-			return false;
-		}
-		if(!args[1].equals("roll")){
+		String[] args = message.split(" ", 2);
+		if(args.length != 2){
 			return false;
 		}
 		
 		try{
-			String dice = args[2];
+			String dice = args[1];
 			String[] fmt = dice.split("d", 2);
 			int die = Integer.parseInt(fmt[0]);
 			int sides = Integer.parseInt(fmt[1]);
