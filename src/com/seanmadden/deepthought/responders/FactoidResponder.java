@@ -13,14 +13,17 @@
 package com.seanmadden.deepthought.responders;
 
 import java.sql.*;
+import java.util.Collection;
 import java.util.Random;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.seanmadden.deepthought.Configuration;
 import com.seanmadden.deepthought.IRCClient;
 import com.seanmadden.deepthought.Message;
 import com.seanmadden.deepthought.MessageHandler;
+import com.seanmadden.deepthought.User;
 import com.seanmadden.deepthought.responders.factoidcommands.*;
 
 /**
@@ -38,6 +41,7 @@ public class FactoidResponder implements MessageHandler {
 		{
 			add(new LiteralCommand(FactoidResponder.this));
 			add(new QueryCommand(FactoidResponder.this));
+			add(new ForgetCommand(FactoidResponder.this));
 		}
 	};
 	
@@ -46,15 +50,7 @@ public class FactoidResponder implements MessageHandler {
 	private Pattern ACTION = Pattern.compile(".*[,:] (.+) <(.+)> (.+)");
 
 	public FactoidResponder() {
-		try {
-			Class.forName("org.sqlite.JDBC");
-			conn = DriverManager.getConnection("jdbc:sqlite:factoids.db");
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-
+		conn = Configuration.getInstance().getConn();
 	}
 
 	/**
@@ -74,8 +70,16 @@ public class FactoidResponder implements MessageHandler {
 				return true;
 			}
 		}
+		Collection<User> users = irc.getUsersFor(m.getTarget());
+		User user = null;
+		for(User u : users){
+			if(u.getNick().equals(m.getNick())){
+				user = u;
+				break;
+			}
+		}
 		
-		if (message.contains(irc.getNick())) {
+		if (message.contains(irc.getNick()) && user != null && user.isOpper()) {
 			Matcher match = IS.matcher(message);
 			if (match.matches()) {
 				String trigger = match.group(1);
@@ -112,6 +116,10 @@ public class FactoidResponder implements MessageHandler {
 				}
 				return true;
 			}
+		}else if(message.contains(irc.getNick()) && user != null && !user.isOpper()){
+			Message msg = new Message("You are not an op, " + m.getNick(), m.getTarget());
+			irc.sendMessage(msg);
+			return true;
 		}
 		try {
 			PreparedStatement s = conn
@@ -142,7 +150,7 @@ public class FactoidResponder implements MessageHandler {
 			String response = set.getString("response");
 			String action = set.getString("action");
 			String trigger = set.getString("trigger").replaceAll("%", "");
-			response = response.replaceAll("\\$who", m.getUsermask());
+			response = response.replaceAll("\\$who", m.getNick());
 			int id = set.getInt("id");
 			set.close();
 			if (response.equals("")) {
@@ -174,14 +182,14 @@ public class FactoidResponder implements MessageHandler {
 				.prepareStatement("insert into factoids (trigger, response, submitted_by, action) values (?, ?, ?, ?);COMMIT;");
 		s.setString(1, "%" + trigger + "%");
 		s.setString(2, response);
-		s.setString(3, m.getUsermask());
+		s.setString(3, m.getNick());
 		s.setString(4, action);
 		conn.setAutoCommit(false);
 		s.execute();
 		s.close();
 		conn.commit();
 		conn.setAutoCommit(true);
-		Message msg = new Message("As you wish, " + m.getUsermask(), m
+		Message msg = new Message("As you wish, " + m.getNick(), m
 				.getTarget());
 		irc.sendMessage(msg);
 		
