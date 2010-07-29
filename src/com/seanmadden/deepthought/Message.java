@@ -33,9 +33,9 @@ public class Message {
 	private static Pattern PART = Pattern.compile("^:(.+)!(.+) PART (.+)$");
 	private static Pattern QUIT = Pattern.compile("^:(.+)!(.+) QUIT :(.+)$");
 	private static Pattern NAMES = Pattern
-			.compile("^:(.+) 353 .+ #(.+) :(.+)$");
+			.compile("^:(.+) 353 .+ #(.+?) :(.+)$");
 	private static Pattern PRIVMSG = Pattern
-			.compile("^:(.+)!(.+) PRIVMSG #(.+) :(.+)$");
+			.compile("^:(.+)!(.+) PRIVMSG #(.+?) :(.+)$");
 	private static Pattern PING = Pattern.compile("^PING :(.+)$");
 	private static Pattern MODE = Pattern.compile("^:(.+)!(.+) MODE (.+) (.+) (.+)$");
 
