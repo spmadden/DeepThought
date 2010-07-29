@@ -40,16 +40,20 @@ public class DeepThought implements MessageObserver {
 		irc.addCallback("PRIVMSG", this);
 		irc.addCallback("PING", this);
 		this.handlers.add(new PingResponder());
+		this.handlers.add(new IgnoreResponder());
+		this.handlers.add(new RouletteResponder());
 		this.handlers.add(new SayResponder());
 		this.handlers.add(new LMGTFYResponder());
 		this.handlers.add(new QuoteResponder());
 		this.handlers.add(new ManPageResponder());
 		this.handlers.add(new WikiResponder());
 		this.handlers.add(new DiceResponder());
-		//this.handlers.add(new LoveResponder());
-		//this.handlers.add(new DanceResponder());
-		//this.handlers.add(new BotsnackResponder());
-		this.handlers.add(new FactoidResponder());
+		
+		this.handlers.add(new LoveResponder());
+		this.handlers.add(new DanceResponder());
+		this.handlers.add(new BotsnackResponder());
+		this.handlers.add(new SaluteResponder());
+		//this.handlers.add(new FactoidResponder());
 		this.handlers.add(new QuestionResponder());
 		
 
