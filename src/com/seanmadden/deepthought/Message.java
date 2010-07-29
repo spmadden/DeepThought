@@ -12,16 +12,87 @@
 
 package com.seanmadden.deepthought;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * This class represents a single message To/From an irc server.
  * 
  * @author Sean P Madden
  */
 public class Message {
+	private String nick = "";
 	private String usermask = "";
 	private String method = "";
 	private String message = "";
 	private String target = "";
+	
+	private long timestamp = 0;
+
+	private static Pattern JOIN = Pattern.compile("^:(.+)!(.+) JOIN :(.+)$");
+	private static Pattern PART = Pattern.compile("^:(.+)!(.+) PART (.+)$");
+	private static Pattern QUIT = Pattern.compile("^:(.+)!(.+) QUIT :(.+)$");
+	private static Pattern NAMES = Pattern
+			.compile("^:(.+) 353 .+ #(.+) :(.+)$");
+	private static Pattern PRIVMSG = Pattern
+			.compile("^:(.+)!(.+) PRIVMSG #(.+) :(.+)$");
+	private static Pattern PING = Pattern.compile("^PING :(.+)$");
+	private static Pattern MODE = Pattern.compile("^:(.+)!(.+) MODE (.+) (.+) (.+)$");
+
+	public static Message fromString(String message) {
+		String user = "", method = "", target = "", msg = "";
+		Matcher m = PRIVMSG.matcher(message);
+		if (m.matches()) {
+			user = m.group(1);
+			method = "PRIVMSG";
+			target = "#" + m.group(3);
+			msg = m.group(4);
+			return new Message(user, method, msg, target);
+		}
+		m = PING.matcher(message);
+		if (m.matches()) {
+			target = m.group(1);
+			method = "PING";
+			return new Message(user, method, msg, target);
+		}
+		m = JOIN.matcher(message);
+		if (m.matches()) {
+			user = m.group(1);
+			target = m.group(3);
+			method = "JOIN";
+			return new Message(user, method, msg, target);
+		}
+		m = PART.matcher(message);
+		if(m.matches()){
+			user = m.group(1);
+			target = m.group(3);
+			method = "PART";
+			return new Message(user, method, msg, target);
+		}
+		m = QUIT.matcher(message);
+		if(m.matches()){
+			user = m.group(1);
+			method = "QUIT";
+			return new Message(user, method, msg, target);
+		}
+		m = NAMES.matcher(message);
+		if(m.matches()){
+			user = m.group(3);
+			target = "#" + m.group(2);
+			method = "NAMES";
+			return new Message(user, method, msg, target);
+		}
+		m = MODE.matcher(message);
+		if(m.matches()){
+			user = m.group(1);
+			target = m.group(3);
+			method = "MODE";
+			message = m.group(4) + " " + m.group(5);
+		}
+		
+
+		return new Message(user, method, msg, target);
+	}
 
 	/**
 	 * Makes a message
@@ -33,19 +104,22 @@ public class Message {
 	 */
 	public Message(String message, String target) {
 		this("", "PRIVMSG", message, target);
-		
+
 	}
-	
-	public Message(String method, String message, String target){
+
+	public Message(String method, String message, String target) {
 		this("", method, message, target);
 	}
-	public Message(String usermask, String method, String message, String target){
-		this.usermask = usermask;
+
+	public Message(String user, String method, String message, String target) {
+		this.nick = user;
 		this.method = method;
 		this.message = message;
 		this.target = target;
+		this.timestamp = System.currentTimeMillis();
 	}
 
+	
 	/**
 	 * Returns the usermask
 	 * 
@@ -54,6 +128,7 @@ public class Message {
 	public String getUsermask() {
 		return usermask;
 	}
+	/*/
 
 	/**
 	 * Sets the usermask
@@ -123,6 +198,42 @@ public class Message {
 	}
 
 	/**
+	 * Returns the nick
+	 *
+	 * @return nick the nick
+	 */
+	public String getNick() {
+		return nick;
+	}
+
+	/**
+	 * Sets the nick
+	 *
+	 * @param nick the nick to set
+	 */
+	public void setNick(String nick) {
+		this.nick = nick;
+	}
+
+	/**
+	 * Returns the timestamp
+	 *
+	 * @return timestamp the timestamp
+	 */
+	public long getTimestamp() {
+		return timestamp;
+	}
+
+	/**
+	 * Sets the timestamp
+	 *
+	 * @param timestamp the timestamp to set
+	 */
+	public void setTimestamp(long timestamp) {
+		this.timestamp = timestamp;
+	}
+
+	/**
 	 * Makes a message!
 	 * 
 	 * @see java.lang.Object#toString()
@@ -142,24 +253,6 @@ public class Message {
 		builder.append("\r\n");
 
 		return builder.toString();
-	}
-
-	public static Message fromString(String message) {
-		String user = "", method = "", target = "", msg = "";
-
-		if (message.contains("PRIVMSG")) {
-			String[] arr = message.split(":", 3);
-			msg = arr[2];
-			arr = arr[1].split(" ");
-			user = arr[0].split("!")[0];
-			method = arr[1];
-			target = arr[2];
-		} else if (message.contains("PING")) {
-			method = "PING";
-			target = message.split(":")[1];
-		}
-
-		return new Message(user, method, msg, target);
 	}
 
 }
