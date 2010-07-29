@@ -12,11 +12,13 @@
 
 package com.seanmadden.deepthought.responders;
 
+import java.util.Collection;
 import java.util.Random;
 
 import com.seanmadden.deepthought.IRCClient;
 import com.seanmadden.deepthought.Message;
 import com.seanmadden.deepthought.MessageHandler;
+import com.seanmadden.deepthought.User;
 
 /**
  * [Insert class description here]
@@ -39,6 +41,24 @@ public class RouletteResponder implements MessageHandler {
 		String message = m.getMessage();
 		if (!message.toLowerCase().startsWith("!roulette")) {
 			return false;
+		}
+		String[] args = message.split(" ", 2);
+		if(args.length == 2){
+			Collection<User> users = irc.getUsersFor(m.getTarget());
+			User u = null;
+			for(User user : users){
+				if(user.getNick().equals(m.getNick())){
+					u = user;
+					break;
+				}
+			}
+			if(u != null && u.isOpper()){
+				m.setNick(args[1]);
+			}else if(u != null && !u.isOpper()){
+				Message msg = new Message("You are not an opper, " + m.getNick(), m.getTarget());
+				irc.sendMessage(msg);
+				return true;
+			}
 		}
 		Message msg = new Message("\u0001ACTION slowly points a gun at "
 				+ m.getNick()+"\u0001", m.getTarget());
