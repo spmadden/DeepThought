@@ -18,9 +18,12 @@ import java.util.Collection;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
@@ -44,10 +47,12 @@ public class IRCClient extends Thread {
 	private String nick = "DeepThought";
 	private String identpass = "pdntspa";
 	private Vector<String> channels = new Vector<String>();
+	
+	private static Pattern MODES = Pattern.compile("([+-].) (.+)");
 
 	private LinkedList<Message> messageHistory = new LinkedList<Message>();
 	private Hashtable<String, List<MessageObserver>> calls = new Hashtable<String, List<MessageObserver>>();
-
+	private Hashtable<String, Hashtable<String, User>> users = new Hashtable<String, Hashtable<String, User>>();
 	private ExecutorService exec = Executors.newCachedThreadPool();
 
 	public IRCClient() {
@@ -74,8 +79,8 @@ public class IRCClient extends Thread {
 		}
 
 		Message nick = new Message("NICK", "", this.nick);
-		Message user = new Message("USER", "", this.username + " "
-				+ this.host + " " + this.server + " " + this.realname);
+		Message user = new Message("USER", "", this.username + " " + this.host
+				+ " " + this.server + " " + this.realname);
 		Message ident = new Message("identify " + identpass, "nickserv");
 		this.sendMessage(nick);
 		this.sendMessage(user);
@@ -84,21 +89,90 @@ public class IRCClient extends Thread {
 		for (String channel : this.channels) {
 			Message chan = new Message("JOIN", "", channel);
 			this.sendMessage(chan);
+			users.put(channel, new Hashtable<String, User>());
 		}
 
 		while (sock.isConnected()) {
 			try {
 				String message = reader.readLine();
-				log.debug(message);
+				log.debug(message.trim());
 				final Message m = Message.fromString(message);
 				if (m.getMethod().equals("PRIVMSG")) {
 					synchronized (this) {
+						// notify the user object we got a message
+						User u = users.get(m.getTarget()).get(m.getNick());
+						u.gotMessage(m);
+						if(u.isSpamming() && !u.isOpper()){
+							log.info(u.getNick() + " IS SPAMMING!");
+							Message msg = new Message("KICK", "SPAMMER!", m.getTarget() + " " + m.getNick());
+							this.sendMessage(msg);
+							users.get(m.getTarget()).remove(u);
+							continue;
+						}
+
+						// append the message to the local history
 						messageHistory.push(m);
 						while (messageHistory.size() > 50) {
 							messageHistory.removeLast();
 						}
 					}
+				}else if(m.getMethod().equals("MODE")){
+					String msg = m.getMessage();
+					Matcher matcher = MODES.matcher(msg);
+					if(!matcher.matches()){
+						continue;
+					}
+					User u = users.get(m.getTarget()).get(matcher.group(2));
+					if(matcher.group(1).equals("-o")){
+						// remove opper.
+						log.info(matcher.group(2) + " no longer has OPPER status.");
+						u.setOpper(false);
+					}else if(matcher.group(1).equals("+o")){
+						// set opper
+						log.info(matcher.group(2) + " now has OPPER status.");
+						u.setOpper(true);
+					}
+				} else if (m.getMethod().equals("JOIN")) {
+					// process a JOIN command
+					// make sure we don't process ourselves.
+					if (m.getNick().equals(this.getNick())) {
+						continue;
+					}
+					log.info(m.getNick() + " HAS JOINED " + m.getTarget());
+					users.get(m.getTarget()).put(m.getNick(),
+							new User(m.getNick(), ""));
+				} else if (m.getMethod().equals("NAMES")) {
+					// process a NAMES command
+					String[] users = m.getNick().split(" ");
+					for (String s : users) {
+						User u = new User(s, "");
+						if(s.startsWith("@")){
+							u.setOpper(true);
+							s = s.replaceAll("@", "");
+						}
+						this.users.get(m.getTarget()).put(s, u);
+					}
+					System.out.println(this.users);
+				} else if (m.getMethod().equals("PART")) {
+					// process a PART command
+					log.info(m.getNick() + " HAS LEFT " + m.getTarget());
+					users.get(m.getTarget()).remove(m.getNick());
+				} else if (m.getMethod().equals("QUIT")) {
+					log.info(m.getNick() + " HAS LEFT THE BUILDING");
+					// iterate over all users and remove those with the same
+					// nick within the same channel
+					for (Map.Entry<String, Hashtable<String, User>> set : users
+							.entrySet()) {
+						for (Map.Entry<String, User> u : set.getValue()
+								.entrySet()) {
+							if (u.getValue().getNick().equals(m.getNick())) {
+								set.getValue().remove(u);
+							}
+						}
+					}
 				}
+				// if a caller has registered for this type of message, notify
+				// them in their own thread.
 				if (calls.containsKey(m.getMethod())) {
 					for (final MessageObserver obs : calls.get(m.getMethod())) {
 						exec.execute(new Runnable() {
@@ -288,6 +362,10 @@ public class IRCClient extends Thread {
 	 */
 	public LinkedList<Message> getMessageHistory() {
 		return messageHistory;
+	}
+
+	public Collection<User> getUsersFor(String channel) {
+		return users.get(channel).values();
 	}
 
 }
