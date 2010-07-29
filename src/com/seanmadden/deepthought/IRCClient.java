@@ -117,7 +117,7 @@ public class IRCClient extends Thread {
 						}
 					}
 				}else if(m.getMethod().equals("MODE")){
-					String msg = m.getMessage();
+					String msg = m.getMessage().trim();
 					Matcher matcher = MODES.matcher(msg);
 					if(!matcher.matches()){
 						continue;
@@ -149,6 +149,10 @@ public class IRCClient extends Thread {
 						if(s.startsWith("@")){
 							u.setOpper(true);
 							s = s.replaceAll("@", "");
+							u.setNick(s);
+						}else if(s.startsWith("+")){
+							s = s.replaceAll("\\+", "");
+							u.setNick(s);
 						}
 						this.users.get(m.getTarget()).put(s, u);
 					}
