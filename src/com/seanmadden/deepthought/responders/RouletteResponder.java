@@ -40,19 +40,20 @@ public class RouletteResponder implements MessageHandler {
 		if (!message.toLowerCase().startsWith("!roulette")) {
 			return false;
 		}
-		Message msg = new Message("\u001ACTION slowly points a gun at "
-				+ m.getNick(), m.getTarget());
+		Message msg = new Message("\u0001ACTION slowly points a gun at "
+				+ m.getNick()+"\u0001", m.getTarget());
 		irc.sendMessage(msg);
 		try {
-			Thread.sleep(1500);
+			Thread.sleep(2500);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 		Random rand = new Random();
 		if(rand.nextInt(6) == 0){
 			msg = new Message("KICK", "BAM!", m.getTarget() + " " + m.getNick());
+		}else{
+			msg.setMessage(m.getNick() + " hears the click of a hammer.  They are safe for now.");
 		}
-		msg.setMessage(m.getNick() + " hears the click of a hammer.  They are safe for now.");
 		irc.sendMessage(msg);
 		return true;
 	}
