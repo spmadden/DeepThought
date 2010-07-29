@@ -24,11 +24,7 @@ public class DiceResponder implements MessageHandler {
 	public boolean handleMessage(IRCClient irc, Message m) {
 		String message = m.getMessage().trim();
 		if(!message.startsWith("!roll")){
-			if(message.startsWith(irc.getNick()) && message.contains("roll")){
-				message = message.substring(message.indexOf("roll")).trim();
-			}else{
-				return false;
-			}
+			return false;
 		}
 		String[] args = message.split(" ", 2);
 		if(args.length != 2){
