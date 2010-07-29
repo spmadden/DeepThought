@@ -41,7 +41,7 @@ public class LMGTFYResponder implements MessageHandler {
 			return false;
 		}
 		String derp = message.toLowerCase().substring(message.toLowerCase().indexOf("how do i"));
-		String msg = m.getUsermask() + ": " + bitly.shorten("http://lmgtfy.com/?q=" + derp);
+		String msg = m.getNick() + ": " + bitly.shorten("http://lmgtfy.com/?q=" + derp);
 		Message ret = new Message(msg, m.getTarget());
 		irc.sendMessage(ret);
 		return true;

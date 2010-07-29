@@ -46,7 +46,7 @@ public class QuestionResponder implements MessageHandler {
 			String options = message.split("\\? ", 2)[1];
 			String opts[] = options.split(" or ");
 			int choice = new Random().nextInt(opts.length);
-			String response = m.getUsermask() + ": " + opts[choice];
+			String response = m.getNick() + ": " + opts[choice];
 			Message msg = new Message(response, m.getTarget());
 			irc.sendMessage(msg);
 			return true;
@@ -56,7 +56,7 @@ public class QuestionResponder implements MessageHandler {
 			if (message.toLowerCase().contains(q)
 					&& message.length() > q.length()) {
 				int choice = new Random().nextInt(responses.length);
-				String response = m.getUsermask() + ": " + responses[choice];
+				String response = m.getNick() + ": " + responses[choice];
 				Message msg = new Message(response, m.getTarget());
 				irc.sendMessage(msg);
 				return true;

@@ -43,12 +43,12 @@ public class DiceResponder implements MessageHandler {
 			int die = Integer.parseInt(fmt[0]);
 			int sides = Integer.parseInt(fmt[1]);
 			if(die > 30 || die < 1){
-				Message msg = new Message(m.getUsermask() + ": No.", m.getTarget());
+				Message msg = new Message(m.getNick() + ": No.", m.getTarget());
 				irc.sendMessage(msg);
 				return true;
 			}
 			if(sides > 9999 || sides < 1){
-				Message msg = new Message(m.getUsermask() + ": No.", m.getTarget());
+				Message msg = new Message(m.getNick() + ": No.", m.getTarget());
 				irc.sendMessage(msg);
 				return true;
 			}
@@ -64,10 +64,10 @@ public class DiceResponder implements MessageHandler {
 				response += "for a total of: " + total;
 			}
 			
-			Message msg = new Message(m.getUsermask() + ": " + response, m.getTarget());
+			Message msg = new Message(m.getNick() + ": " + response, m.getTarget());
 			irc.sendMessage(msg);
 		}catch(NumberFormatException e){
-			Message msg = new Message(m.getUsermask() + ": can't figure out what you meant!", m.getTarget());
+			Message msg = new Message(m.getNick() + ": can't figure out what you meant!", m.getTarget());
 			irc.sendMessage(msg);
 		}
 		return true;
