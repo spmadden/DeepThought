@@ -37,6 +37,7 @@ public class WikiResponder implements MessageHandler {
 		
 		String wiki = "https://secure.wikimedia.org/wikipedia/en/wiki/";
 		try {
+			args[1] = args[1].replaceAll(" ", "_");
 			wiki += URLEncoder.encode(args[1], "UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
