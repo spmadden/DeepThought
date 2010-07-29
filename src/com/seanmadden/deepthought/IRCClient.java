@@ -159,8 +159,14 @@ public class IRCClient extends Thread {
 					System.out.println(this.users);
 				} else if (m.getMethod().equals("PART")) {
 					// process a PART command
+					String s = m.getNick();
+					if(s.startsWith("@")){
+						s = s.replaceAll("@", "");
+					}else if(s.startsWith("+")){
+						s = s.replaceAll("\\+", "");
+					}
 					log.info(m.getNick() + " HAS LEFT " + m.getTarget());
-					users.get(m.getTarget()).remove(m.getNick());
+					users.get(m.getTarget()).remove(s);
 				} else if (m.getMethod().equals("QUIT")) {
 					log.info(m.getNick() + " HAS LEFT THE BUILDING");
 					// iterate over all users and remove those with the same
