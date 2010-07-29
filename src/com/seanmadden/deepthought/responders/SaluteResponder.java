@@ -43,7 +43,11 @@ public class SaluteResponder implements MessageHandler {
 				continue;
 			}
 			int startpos = message.toLowerCase().indexOf(rank) + rank.length();
-			String response = message.substring(startpos, message.indexOf(' ', startpos + 1));
+			int offset = message.indexOf(' ', startpos + 1);
+			if(offset < 0){
+				offset = message.length();
+			}
+			String response = message.substring(startpos, offset);
 			response = "\u0001ACTION salutes " + rank + " " + response + "\u0001";
 			Message msg = new Message(response, m.getTarget());
 			irc.sendMessage(msg);
