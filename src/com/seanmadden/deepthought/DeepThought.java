@@ -41,6 +41,8 @@ public class DeepThought implements MessageObserver {
 		irc.addCallback("PING", this);
 		this.handlers.add(new PingResponder());
 		this.handlers.add(new IgnoreResponder());
+		
+		this.handlers.add(new DeathResponder());
 		this.handlers.add(new RouletteResponder());
 		this.handlers.add(new SayResponder());
 		this.handlers.add(new LMGTFYResponder());
@@ -50,14 +52,15 @@ public class DeepThought implements MessageObserver {
 		this.handlers.add(new DiceResponder());
 		this.handlers.add(new SaluteResponder());
 		
-		this.handlers.add(new LoveResponder());
-		this.handlers.add(new DanceResponder());
-		this.handlers.add(new BotsnackResponder());
-		//this.handlers.add(new FactoidResponder());
+		//this.handlers.add(new LoveResponder());
+		//this.handlers.add(new DanceResponder());
+		//this.handlers.add(new BotsnackResponder());
+		this.handlers.add(new FactoidResponder());
 		this.handlers.add(new QuestionResponder());
 		
 
 		irc.getChannels().add("#interns");
+		//irc.getChannels().add("#bots");
 
 		irc.start();
 		Runtime.getRuntime().addShutdownHook(new Thread() {
