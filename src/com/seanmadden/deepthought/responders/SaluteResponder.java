@@ -42,6 +42,9 @@ public class SaluteResponder implements MessageHandler {
 			if(!message.toLowerCase().contains(rank)){
 				continue;
 			}
+			if(rank.equals("kernel")){
+				rank = "colonel";
+			}
 			int startpos = message.toLowerCase().indexOf(rank) + rank.length();
 			int offset = message.indexOf(' ', startpos + 1);
 			if(offset < 0){
