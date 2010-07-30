@@ -12,7 +12,6 @@
 
 package com.seanmadden.deepthought.responders;
 
-import java.util.Collection;
 import java.util.Random;
 
 import com.seanmadden.deepthought.IRCClient;
@@ -44,14 +43,7 @@ public class RouletteResponder implements MessageHandler {
 		}
 		String[] args = message.split(" ", 2);
 		if(args.length == 2){
-			Collection<User> users = irc.getUsersFor(m.getTarget());
-			User u = null;
-			for(User user : users){
-				if(user.getNick().equals(m.getNick())){
-					u = user;
-					break;
-				}
-			}
+			User u = m.getUser();
 			if(u != null && u.isOpper()){
 				m.setNick(args[1]);
 			}else if(u != null && !u.isOpper()){

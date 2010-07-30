@@ -13,7 +13,6 @@
 package com.seanmadden.deepthought.responders;
 
 import java.sql.*;
-import java.util.Collection;
 import java.util.Random;
 import java.util.Vector;
 import java.util.regex.Matcher;
@@ -70,14 +69,7 @@ public class FactoidResponder implements MessageHandler {
 				return true;
 			}
 		}
-		Collection<User> users = irc.getUsersFor(m.getTarget());
-		User user = null;
-		for(User u : users){
-			if(u.getNick().equals(m.getNick())){
-				user = u;
-				break;
-			}
-		}
+		User user = m.getUser();
 		
 		if (message.contains(irc.getNick()) && user != null && user.isOpper()) {
 			Matcher match = IS.matcher(message);
@@ -116,11 +108,11 @@ public class FactoidResponder implements MessageHandler {
 				}
 				return true;
 			}
-		}else if(message.contains(irc.getNick()) && user != null && !user.isOpper()){
+		}/*else if(message.contains(irc.getNick()) && user != null && !user.isOpper()){
 			Message msg = new Message("You are not an op, " + m.getNick(), m.getTarget());
 			irc.sendMessage(msg);
 			return true;
-		}
+		}*/
 		try {
 			PreparedStatement s = conn
 					.prepareStatement("select *, count(*) as length from factoids where ? like trigger;");

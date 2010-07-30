@@ -54,6 +54,7 @@ public class IRCClient extends Thread {
 	private Hashtable<String, List<MessageObserver>> calls = new Hashtable<String, List<MessageObserver>>();
 	private Hashtable<String, Hashtable<String, User>> users = new Hashtable<String, Hashtable<String, User>>();
 	private ExecutorService exec = Executors.newCachedThreadPool();
+	private boolean run = true;
 
 	public IRCClient() {
 
@@ -92,15 +93,16 @@ public class IRCClient extends Thread {
 			users.put(channel, new Hashtable<String, User>());
 		}
 
-		while (sock.isConnected()) {
+		while (run && sock.isConnected()) {
 			try {
 				String message = reader.readLine();
 				log.debug(message.trim());
 				final Message m = Message.fromString(message);
 				if (m.getMethod().equals("PRIVMSG")) {
+					User u = users.get(m.getTarget()).get(m.getNick());
+					m.setUser(u);
 					synchronized (this) {
 						// notify the user object we got a message
-						User u = users.get(m.getTarget()).get(m.getNick());
 						u.gotMessage(m);
 						if(u.isSpamming() && !u.isOpper()){
 							log.info(u.getNick() + " IS SPAMMING!");
@@ -173,10 +175,10 @@ public class IRCClient extends Thread {
 					// nick within the same channel
 					for (Map.Entry<String, Hashtable<String, User>> set : users
 							.entrySet()) {
-						for (Map.Entry<String, User> u : set.getValue()
+						for (Map.Entry<String, User> us : set.getValue()
 								.entrySet()) {
-							if (u.getValue().getNick().equals(m.getNick())) {
-								set.getValue().remove(u);
+							if (us.getValue().getNick().equals(m.getNick())) {
+								set.getValue().remove(us);
 							}
 						}
 					}
@@ -223,6 +225,23 @@ public class IRCClient extends Thread {
 			this.calls.put(method, new Vector<MessageObserver>());
 		}
 		this.calls.get(method).add(cb);
+	}
+	
+	public void stopServer(){
+		this.run = false;
+		try {
+			for (String channel : getChannels()) {
+				Message m = new Message("blargh i am ded",
+						channel);
+				sendMessage(m);
+			}
+			this.sock.close();
+			this.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**

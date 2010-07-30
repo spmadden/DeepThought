@@ -27,6 +27,8 @@ public class Message {
 	private String message = "";
 	private String target = "";
 	
+	private User user = null;
+	
 	private long timestamp = 0;
 
 	private static Pattern JOIN = Pattern.compile("^:(.+)!(.+) JOIN :(.+)$");
@@ -253,6 +255,24 @@ public class Message {
 		builder.append("\r\n");
 
 		return builder.toString();
+	}
+
+	/**
+	 * Sets the user
+	 *
+	 * @param user the user to set
+	 */
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+	/**
+	 * Returns the user
+	 *
+	 * @return user the user
+	 */
+	public User getUser() {
+		return user;
 	}
 
 }
