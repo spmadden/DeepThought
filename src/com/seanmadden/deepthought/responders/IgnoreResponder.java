@@ -13,6 +13,8 @@
 package com.seanmadden.deepthought.responders;
 
 import java.sql.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.seanmadden.deepthought.Configuration;
 import com.seanmadden.deepthought.IRCClient;
@@ -52,6 +54,30 @@ public class IgnoreResponder implements MessageHandler {
 				return true;
 			}
 			
+			if(m.getUser() != null && m.getUser().isOpper()){
+				if(!message.startsWith(irc.getNick())){
+					return false;
+				}
+				if(!message.contains("ignore")){
+					return false;
+				}
+				Pattern p = Pattern.compile("^"+irc.getNick() + "[:,] ignore (.+)$");
+				Matcher match = p.matcher(message);
+				if(match.matches()){
+					String user = match.group(1);
+					PreparedStatement s = conn.prepareStatement("insert into ignored_users (user) values (?);");
+					s.setString(1, user);
+					conn.setAutoCommit(false);
+					s.execute();
+					s.close();
+					conn.commit();
+					conn.setAutoCommit(true);
+					
+					Message msg = new Message("Okay, " + m.getNick() + ".  I'm ignoring " + user, m.getTarget());
+					irc.sendMessage(msg);
+					return true;
+				}
+			}
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
