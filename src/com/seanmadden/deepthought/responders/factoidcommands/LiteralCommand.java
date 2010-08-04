@@ -13,6 +13,7 @@
 package com.seanmadden.deepthought.responders.factoidcommands;
 
 import com.seanmadden.deepthought.IRCClient;
+import com.seanmadden.deepthought.Message;
 import com.seanmadden.deepthought.responders.FactoidResponder;
 
 /**
@@ -34,7 +35,7 @@ public class LiteralCommand extends FactoidCommand {
 	 * @return
 	 */
 	@Override
-	public boolean checkCommand(String message, IRCClient irc) {
+	public boolean checkCommand(Message message, IRCClient irc) {
 		// TODO Auto-generated method stub
 		return false;
 	}

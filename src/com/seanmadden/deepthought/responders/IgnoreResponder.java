@@ -66,17 +66,31 @@ public class IgnoreResponder implements MessageHandler {
 				if(match.matches()){
 					String user = match.group(1);
 					PreparedStatement s = conn.prepareStatement("insert into ignored_users (user) values (?);");
-					s.setString(1, user);
+					s.setString(1, user.trim());
 					conn.setAutoCommit(false);
 					s.execute();
 					s.close();
 					conn.commit();
 					conn.setAutoCommit(true);
 					
-					Message msg = new Message("Okay, " + m.getNick() + ".  I'm ignoring " + user, m.getTarget());
-					irc.sendMessage(msg);
+					m.respondWith("Okay, " + m.getNick() + ".  I'm ignoring " + user, irc);
 					return true;
 				}
+				match = Pattern.compile("^"+irc.getNick()+"[:,] unignore (.+)$").matcher(message);
+				if(match.matches()){
+					String user = match.group(1);
+					PreparedStatement s = conn.prepareStatement("delete from ignored_users where user = ?;");
+					s.setString(1, user.trim());
+					conn.setAutoCommit(false);
+					s.execute();
+					s.close();
+					conn.commit();
+					conn.setAutoCommit(true);
+					
+					m.respondWith("Okay, " + m.getNick() + ".  I'm unignoring " + user, irc);
+					return true;
+				}
+				
 			}
 			
 		} catch (SQLException e) {

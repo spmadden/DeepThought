@@ -173,15 +173,10 @@ public class IRCClient extends Thread {
 					log.info(m.getNick() + " HAS LEFT THE BUILDING");
 					// iterate over all users and remove those with the same
 					// nick within the same channel
-					for (Map.Entry<String, Hashtable<String, User>> set : users
-							.entrySet()) {
-						for (Map.Entry<String, User> us : set.getValue()
-								.entrySet()) {
-							if (us.getValue().getNick().equals(m.getNick())) {
-								set.getValue().remove(us);
-							}
-						}
-					}
+					this.removeUser(m.getNick());
+				}else if(m.getMethod().equals("NICK")){
+					log.info(m.getNick() + " has NICK'd to " + m.getTarget());
+					this.changeNick(m.getNick(), m.getTarget());
 				}
 				// if a caller has registered for this type of message, notify
 				// them in their own thread.
@@ -200,6 +195,44 @@ public class IRCClient extends Thread {
 			}
 		}
 
+	}
+	
+	public void joinChannel(String channel){
+		Message chan = new Message("JOIN", "", channel);
+		this.sendMessage(chan);
+		users.put(channel, new Hashtable<String, User>());
+		channels.add(channel);
+	}
+	
+	public void partChannel(String channel){
+		Message chan = new Message("PART", "", channel);
+		this.sendMessage(chan);
+		users.remove(channel);
+		channels.remove(channel);
+	}
+	
+	private void removeUser(String nick){
+		for (Map.Entry<String, Hashtable<String, User>> set : users
+				.entrySet()) {
+			for (Map.Entry<String, User> us : set.getValue()
+					.entrySet()) {
+				if (us.getValue().getNick().equals(nick)) {
+					set.getValue().remove(us);
+				}
+			}
+		}
+	}
+	private void changeNick(String from, String to){
+		for(Map.Entry<String, Hashtable<String, User>> set: users.entrySet()){
+			for(Map.Entry<String, User> us: set.getValue().entrySet()){
+				if(us.getKey().equals("from")){
+					User u = set.getValue().remove(from);
+					u.setNick(to);
+					set.getValue().put(to, u);
+					break;
+				}
+			}
+		}
 	}
 
 	public synchronized boolean sendMessage(Message m) {

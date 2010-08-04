@@ -43,8 +43,7 @@ public class WikiResponder implements MessageHandler {
 			e.printStackTrace();
 		}
 		
-		Message mesg = new Message(wiki, m.getTarget());
-		irc.sendMessage(mesg);
+		m.respondWith(wiki, irc);
 		return true;
 	}
 

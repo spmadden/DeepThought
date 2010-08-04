@@ -13,6 +13,7 @@
 package com.seanmadden.deepthought.responders.factoidcommands;
 
 import com.seanmadden.deepthought.IRCClient;
+import com.seanmadden.deepthought.Message;
 import com.seanmadden.deepthought.responders.FactoidResponder;
 
 /**
@@ -28,5 +29,5 @@ public abstract class FactoidCommand {
 		this.resp = resp;
 	}
 	
-	public abstract boolean checkCommand(String message, IRCClient client);
+	public abstract boolean checkCommand(Message message, IRCClient client);
 }

@@ -51,17 +51,14 @@ public class QuoteResponder implements MessageHandler {
 			try{
 				int num = Integer.parseInt(message);
 				if(num <= 0){
-					Message msg = new Message(m.getNick() + ": What?", m.getTarget());
-					irc.sendMessage(msg);
+					m.respondWith(m.getNick() + ": What?", irc);
 					return true;
 				}
 				message = xkcdb.get(message);
-				Message msg = new Message(message, m.getTarget());
-				irc.sendMessage(msg);
+				m.respondWith(message, irc);
 				return true;
 			}catch(NumberFormatException e){
-				Message msg = new Message(m.getNick() + ": What?", m.getTarget());
-				irc.sendMessage(msg);
+				m.respondWith(m.getNick() + ": What?", irc);
 				return true;
 			}
 		}
@@ -80,8 +77,7 @@ public class QuoteResponder implements MessageHandler {
 		
 		if(components[1].equals("add")){
 			String result = chirpy.add(components[2], "Submitted by " + m.getNick(), "");
-			Message msg = new Message(result, m.getTarget());
-			irc.sendMessage(msg);
+			m.respondWith(result, irc);
 		}else if(components[1].equals("addlast")){
 			try{
 				int num = Integer.valueOf(components[2]);
@@ -94,11 +90,9 @@ public class QuoteResponder implements MessageHandler {
 					}
 				}
 				String result = chirpy.add(concat, "Submitted by " + m.getNick(), "");
-				Message msg = new Message(result, m.getTarget());
-				irc.sendMessage(msg);
+				m.respondWith(result, irc);
 			}catch(Exception e){
-				Message msg = new Message(m.getNick() + ": That's not a number!", m.getTarget());
-				irc.sendMessage(msg);
+				m.respondWith(m.getNick() + ": That's not a number!", irc);
 				return true;
 			}
 			
@@ -106,13 +100,11 @@ public class QuoteResponder implements MessageHandler {
 			try{
 				Integer.valueOf(components[2]);
 			}catch(Exception e){
-				Message msg = new Message(m.getNick() + ": That's not a number!", m.getTarget());
-				irc.sendMessage(msg);
+				m.respondWith(m.getNick() + ": That's not a number!", irc);
 				return true;
 			}
 			String result = chirpy.get(components[2]);
-			Message msg = new Message(result, m.getTarget());
-			irc.sendMessage(msg);
+			m.respondWith(result, irc);
 		}
 		
 		
@@ -130,10 +122,8 @@ public class QuoteResponder implements MessageHandler {
 			//"!quote queryword <word> : Searches for quotes with <word> in them and returns the IDs.",
 			//"!quote querytag <tag> : Searches for quotes with the tag <tag> and returns the IDs."
 		};
-		Message msg = new Message("", m.getNick());
 		for(String line : halp){
-			msg.setMessage(line);
-			irc.sendMessage(msg);
+			m.respondWith(line, irc);
 		}
 	}
 

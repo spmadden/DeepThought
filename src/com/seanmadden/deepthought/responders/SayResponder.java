@@ -32,7 +32,7 @@ public class SayResponder implements MessageHandler {
 		if(!args[0].equals("sayto")){
 			return false;
 		}
-		Message msg = new Message(args[2], args[1]);
+		Message msg = new Message("PRIVMSG", args[2], args[1]);
 		irc.sendMessage(msg);
 		return true;
 	}

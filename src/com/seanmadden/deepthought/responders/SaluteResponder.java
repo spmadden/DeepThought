@@ -12,6 +12,9 @@
 
 package com.seanmadden.deepthought.responders;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import com.seanmadden.deepthought.IRCClient;
 import com.seanmadden.deepthought.Message;
 import com.seanmadden.deepthought.MessageHandler;
@@ -39,21 +42,13 @@ public class SaluteResponder implements MessageHandler {
 	public boolean handleMessage(IRCClient irc, Message m) {
 		String message = m.getMessage();
 		for(String rank : ranks){
-			if(!message.toLowerCase().contains(rank)){
+			Matcher match = Pattern.compile(".* " + rank + " (\\w+?)\\b.*").matcher(message);
+			if(!match.matches()){
 				continue;
 			}
-			if(rank.equals("kernel")){
-				rank = "colonel";
-			}
-			int startpos = message.toLowerCase().indexOf(rank) + rank.length();
-			int offset = message.indexOf(' ', startpos + 1);
-			if(offset < 0){
-				offset = message.length();
-			}
-			String response = message.substring(startpos, offset);
+			String response = match.group(1);
 			response = "\u0001ACTION salutes " + rank + " " + response + "\u0001";
-			Message msg = new Message(response, m.getTarget());
-			irc.sendMessage(msg);
+			m.respondWith(response, irc);
 			return true;
 		}
 		return false;

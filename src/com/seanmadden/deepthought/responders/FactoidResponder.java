@@ -32,7 +32,7 @@ import com.seanmadden.deepthought.responders.factoidcommands.*;
  */
 public class FactoidResponder implements MessageHandler {
 	private Connection conn = null;
-	private int lastID = 0;
+	public int lastID = 0;
 
 	private Vector<FactoidCommand> commands = new Vector<FactoidCommand>(){
 		private static final long serialVersionUID = 6257238308939609540L;
@@ -65,13 +65,13 @@ public class FactoidResponder implements MessageHandler {
 	public boolean handleMessage(IRCClient irc, Message m) {
 		String message = m.getMessage();
 		for(FactoidCommand c : this.commands){
-			if(c.checkCommand(message, irc)){
+			if(c.checkCommand(m, irc)){
 				return true;
 			}
 		}
 		User user = m.getUser();
 		
-		if (message.contains(irc.getNick()) && user != null && user.isOpper()) {
+		if (message.contains(irc.getNick()) && user != null ) {
 			Matcher match = IS.matcher(message);
 			if (match.matches()) {
 				String trigger = match.group(1);
@@ -115,25 +115,33 @@ public class FactoidResponder implements MessageHandler {
 		}*/
 		try {
 			PreparedStatement s = conn
-					.prepareStatement("select *, count(*) as length from factoids where ? like trigger;");
+					.prepareStatement("select count(*) as length from factoids where ? like trigger;");
 			s.setString(1, message);
 			if (!s.execute()) {
 				return false;
 			}
+			
 			ResultSet set = s.getResultSet();
 			if (set == null) {
-				return false;
-			}
-			if (!set.next()) {
 				return false;
 			}
 			int length = set.getInt("length");
 			if (length <= 0) {
 				return false;
 			}
+
+			s = conn.prepareStatement("select * from factoids where ? like trigger;");
+			s.setString(1, message);
+			s.execute();
+			set = s.getResultSet();
+
+			if(!set.next()){
+				return false;
+			}
+			
 			Random rand = new Random();
 			int pos = rand.nextInt(length);
-			while (--pos > 0) {
+			while (--pos >= 0) {
 				if (!set.next()) {
 					set.close();
 					return false;
@@ -159,8 +167,7 @@ public class FactoidResponder implements MessageHandler {
 				response = trigger + " " + action + " " + response;
 			}
 			
-			Message msg = new Message(response, m.getTarget());
-			irc.sendMessage(msg);
+			m.respondWith(response, irc);
 			return true;
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -181,9 +188,6 @@ public class FactoidResponder implements MessageHandler {
 		s.close();
 		conn.commit();
 		conn.setAutoCommit(true);
-		Message msg = new Message("As you wish, " + m.getNick(), m
-				.getTarget());
-		irc.sendMessage(msg);
-		
+		m.respondWith("As you wish, " + m.getNick(), irc);
 	}
 }

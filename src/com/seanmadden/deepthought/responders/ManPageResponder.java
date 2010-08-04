@@ -31,12 +31,11 @@ public class ManPageResponder implements MessageHandler {
 		}
 		
 		String page = message.substring(message.indexOf("!man") + 4);
-		String url = "http://www.google.com/search?btnI=I%27m+Feeling+Lucky&aq=f&q=site%3Alinux.die.net+";
+		String url = "http://www.google.com/search?btnI=I%27m+Feeling+Lucky&aq=f&q=site%3Alinux.die.net";
 		try {
 			url += URLEncoder.encode(page, "UTF-8");
 			url = bitly.shorten(url);
-			Message msg = new Message( m.getNick()+": " + url, m.getTarget());
-			irc.sendMessage(msg);
+			m.respondWith(m.getNick()+": " + url, irc);
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}

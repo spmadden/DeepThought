@@ -13,6 +13,8 @@
 package com.seanmadden.deepthought.responders;
 
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.seanmadden.deepthought.IRCClient;
 import com.seanmadden.deepthought.Message;
@@ -30,7 +32,20 @@ public class QuestionResponder implements MessageHandler {
 
 	private static String[] booleanQuestions = { "do", "does", "should",
 			"will", "might", "may", "can", "must", "could", "would", "is",
-			"are", "did", "has" };
+			"are", "did", "has", "was", "have" };
+	private static Pattern BOOLEANQ;
+
+	public QuestionResponder() {
+		String pattern;
+		pattern = ".*(?:";
+		for (String q : booleanQuestions) {
+			pattern += "(?:" + q + ")|";
+		}
+		pattern = pattern.substring(0, pattern.length()-1);
+		pattern += ") (.+)\\?$";
+		BOOLEANQ = Pattern.compile(pattern);
+		System.out.println(pattern);
+	}
 
 	@Override
 	public boolean handleMessage(IRCClient irc, Message m) {
@@ -41,29 +56,24 @@ public class QuestionResponder implements MessageHandler {
 		if (!message.contains(irc.getNick())) {
 			return false;
 		}
-
 		if (message.contains("?") && message.toLowerCase().contains(" or ")) {
 			String options = message.split("\\? ", 2)[1];
 			String opts[] = options.split(" or ");
 			int choice = new Random().nextInt(opts.length);
 			String response = m.getNick() + ": " + opts[choice];
-			Message msg = new Message(response, m.getTarget());
-			irc.sendMessage(msg);
+			m.respondWith(response, irc);
 			return true;
 		}
 
-		for (String q : booleanQuestions) {
-			if (message.toLowerCase().contains(q)
-					&& message.length() > q.length()) {
-				int choice = new Random().nextInt(responses.length);
-				String response = m.getNick() + ": " + responses[choice];
-				Message msg = new Message(response, m.getTarget());
-				irc.sendMessage(msg);
-				return true;
-			}
+		Matcher matcher = BOOLEANQ.matcher(message);
+		if (matcher.matches()) {
+			int choice = new Random().nextInt(responses.length);
+			String response = m.getNick() + ": " + responses[choice];
+			m.respondWith(response, irc);
+			return true;
 		}
-		Message msg = new Message("You rang?", m.getTarget());
-		irc.sendMessage(msg);
+
+		m.respondWith("You rang?", irc);
 		return false;
 	}
 

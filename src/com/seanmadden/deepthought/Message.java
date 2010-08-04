@@ -40,6 +40,7 @@ public class Message {
 			.compile("^:(.+)!(.+) PRIVMSG #(.+?) :(.+)$");
 	private static Pattern PING = Pattern.compile("^PING :(.+)$");
 	private static Pattern MODE = Pattern.compile("^:(.+)!(.+) MODE (.+) (.+) (.+)$");
+	private static Pattern NICK = Pattern.compile("^:(.+)!(.+) NICK :(.+)$");
 
 	public static Message fromString(String message) {
 		String user = "", method = "", target = "", msg = "";
@@ -84,6 +85,13 @@ public class Message {
 			method = "NAMES";
 			return new Message(user, method, msg, target);
 		}
+		m = NICK.matcher(message);
+		if(m.matches()){
+			user = m.group(1);
+			target = m.group(3);
+			method = "NICK";
+			return new Message(user, method, msg, target);
+		}
 		m = MODE.matcher(message);
 		if(m.matches()){
 			user = m.group(1);
@@ -104,7 +112,7 @@ public class Message {
 	 * @param message
 	 * @param target
 	 */
-	public Message(String message, String target) {
+	protected Message(String message, String target) {
 		this("", "PRIVMSG", message, target);
 
 	}
@@ -113,12 +121,20 @@ public class Message {
 		this("", method, message, target);
 	}
 
-	public Message(String user, String method, String message, String target) {
+	protected Message(String user, String method, String message, String target) {
 		this.nick = user;
 		this.method = method;
 		this.message = message;
 		this.target = target;
 		this.timestamp = System.currentTimeMillis();
+	}
+	
+	public void respondWith(String message, IRCClient irc){
+		if(this.target.equals(irc.getNick())){
+			this.target = this.getNick();
+		}
+		Message m = new Message(message, this.target);
+		irc.sendMessage(m);
 	}
 
 	

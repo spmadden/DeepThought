@@ -47,14 +47,12 @@ public class RouletteResponder implements MessageHandler {
 			if(u != null && u.isOpper()){
 				m.setNick(args[1]);
 			}else if(u != null && !u.isOpper()){
-				Message msg = new Message("You are not an opper, " + m.getNick(), m.getTarget());
-				irc.sendMessage(msg);
+				m.respondWith("You are not an opper, " + m.getNick(), irc);
 				return true;
 			}
 		}
-		Message msg = new Message("\u0001ACTION slowly points a gun at "
-				+ m.getNick()+"\u0001", m.getTarget());
-		irc.sendMessage(msg);
+		m.respondWith("\u0001ACTION slowly points a gun at "
+				+ m.getNick()+"\u0001", irc);
 		try {
 			Thread.sleep(2500);
 		} catch (InterruptedException e) {
@@ -62,11 +60,11 @@ public class RouletteResponder implements MessageHandler {
 		}
 		Random rand = new Random();
 		if(rand.nextInt(6) == 0){
-			msg = new Message("KICK", "BAM!", m.getTarget() + " " + m.getNick());
+			Message msg = new Message("KICK", "BAM!", m.getTarget() + " " + m.getNick());
+			irc.sendMessage(msg);
 		}else{
-			msg.setMessage(m.getNick() + " hears the click of a hammer.  They are safe for now.");
+			m.respondWith(m.getNick() + " hears the click of a hammer.  They are safe for now.", irc);
 		}
-		irc.sendMessage(msg);
 		return true;
 	}
 
