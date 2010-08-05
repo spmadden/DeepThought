@@ -40,6 +40,7 @@ public class DeepThought implements MessageObserver {
 		irc.addCallback("PRIVMSG", this);
 		irc.addCallback("PING", this);
 		this.handlers.add(new PingResponder());
+		this.handlers.add(new ShutupResponder());
 		this.handlers.add(new IgnoreResponder());
 		this.handlers.add(new ChannelResponder());
 		

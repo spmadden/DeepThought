@@ -36,6 +36,15 @@ public class ForgetCommand extends FactoidCommand {
 			Connection conn = Configuration.getInstance().getConn();
 			PreparedStatement ps;
 			try {
+				if(resp.lastID == 0){
+					ps = conn.prepareStatement("select id from factoids order by id group by id limit 1;");
+					ps.execute();
+					ResultSet rs = ps.getResultSet();
+					if(rs == null){
+						return false;
+					}
+					resp.lastID = rs.getInt("id");
+				}
 				ps = conn.prepareStatement("select * from factoids where id is ?;");
 				ps.setInt(1, resp.lastID);
 				ps.execute();
@@ -56,8 +65,8 @@ public class ForgetCommand extends FactoidCommand {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-		} else if (message.getMessage().matches(client.getNick()+"[:.] forget #(\\d+)$")) {
-			Matcher m = Pattern.compile(client.getNick()+".*[:,] forget #(\\d+)$").matcher(
+		} else if (message.getMessage().matches(client.getNick()+"[:,] (?:forget ?|delete ?)#(\\d+)$")) {
+			Matcher m = Pattern.compile(client.getNick()+"[:,] (?:forget ?|delete ?)#(\\d+)$").matcher(
 					message.getMessage());
 			if (!m.matches()) {
 				return false;

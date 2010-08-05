@@ -13,6 +13,7 @@
 package com.seanmadden.deepthought.responders;
 
 import java.sql.*;
+import java.util.Collection;
 import java.util.Random;
 import java.util.Vector;
 import java.util.regex.Matcher;
@@ -44,9 +45,8 @@ public class FactoidResponder implements MessageHandler {
 		}
 	};
 	
-	private Pattern IS = Pattern.compile(".*[,:] (.+) is (.+)");
-	private Pattern ARE = Pattern.compile(".*[,:] (.+) are (.+)");
-	private Pattern ACTION = Pattern.compile(".*[,:] (.+?) <(.+?)> (.+)");
+	private Pattern IS = Pattern.compile(".*[:,](.*?) (?:is ?|are ?)(<\\w+>\\s*.+)");
+	private Pattern ACTION = Pattern.compile(".*[:,](.*?)\\s+<(\\w+(?:'t)?)>\\s*(.+)");
 
 	public FactoidResponder() {
 		conn = Configuration.getInstance().getConn();
@@ -72,19 +72,7 @@ public class FactoidResponder implements MessageHandler {
 		User user = m.getUser();
 		
 		if (message.contains(irc.getNick()) && user != null ) {
-			Matcher match = ACTION.matcher(message);
-			if (match.matches()) {
-				String trigger = match.group(1);
-				String action = match.group(2);
-				String response = match.group(3);
-				try {
-					this.addNewFact(irc, trigger, response, action, m);
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-				return true;
-			}
-			match = IS.matcher(message);
+			Matcher match = IS.matcher(message);
 			if (match.matches()) {
 				String trigger = match.group(1);
 				String response = match.group(2);
@@ -96,11 +84,11 @@ public class FactoidResponder implements MessageHandler {
 				}
 				return true;
 			}
-			match = ARE.matcher(message);
+			match = ACTION.matcher(message);
 			if (match.matches()) {
 				String trigger = match.group(1);
-				String response = match.group(2);
-				String action = "are";
+				String action = match.group(2);
+				String response = match.group(3);
 				try {
 					this.addNewFact(irc, trigger, response, action, m);
 				} catch (SQLException e) {
@@ -151,6 +139,12 @@ public class FactoidResponder implements MessageHandler {
 			String action = set.getString("action");
 			String trigger = set.getString("trigger").replaceAll("%", "");
 			response = response.replaceAll("\\$who", m.getNick());
+			if(response.contains("$someone")){
+				Collection<User> users = irc.getUsersFor(m.getTarget());
+				pos = new Random().nextInt(users.size());
+				User u = users.toArray(new User[0])[pos];
+				response = response.replaceAll("\\$someone", u.getNick());
+			}
 			int id = set.getInt("id");
 			set.close();
 			if (response.equals("")) {
@@ -179,10 +173,10 @@ public class FactoidResponder implements MessageHandler {
 			String action, Message m) throws SQLException {
 		PreparedStatement s = conn
 				.prepareStatement("insert into factoids (trigger, response, submitted_by, action) values (?, ?, ?, ?);COMMIT;");
-		s.setString(1, "%" + trigger + "%");
-		s.setString(2, response);
-		s.setString(3, m.getNick());
-		s.setString(4, action);
+		s.setString(1, "%" + trigger.trim() + "%");
+		s.setString(2, response.trim());
+		s.setString(3, m.getNick().trim());
+		s.setString(4, action.trim());
 		conn.setAutoCommit(false);
 		s.execute();
 		s.close();

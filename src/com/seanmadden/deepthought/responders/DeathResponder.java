@@ -39,12 +39,12 @@ public class DeathResponder implements MessageHandler{
 		if(u == null || !u.isOpper()){
 			return false;
 		}
-		if(message.contains(irc.getNick()) && message.contains("die")){
+		if(message.matches(irc.getNick() + "[:,] die$")){
 			irc.stopServer();
 			return true;
 		}
 		
-		if(message.contains("execute the bots")){
+		if(message.matches(irc.getNick() + "[:,] execute the bots$")){
 			for(String bot : bots){
 				m.respondWith("\u0001ACTION slowly points a gun at "
 						+bot+"\u0001", irc);
