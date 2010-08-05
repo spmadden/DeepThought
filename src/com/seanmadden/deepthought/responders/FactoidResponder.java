@@ -46,7 +46,7 @@ public class FactoidResponder implements MessageHandler {
 	
 	private Pattern IS = Pattern.compile(".*[,:] (.+) is (.+)");
 	private Pattern ARE = Pattern.compile(".*[,:] (.+) are (.+)");
-	private Pattern ACTION = Pattern.compile(".*[,:] (.+) <(.+)> (.+)");
+	private Pattern ACTION = Pattern.compile(".*[,:] (.+?) <(.+?)> (.+)");
 
 	public FactoidResponder() {
 		conn = Configuration.getInstance().getConn();
@@ -72,7 +72,19 @@ public class FactoidResponder implements MessageHandler {
 		User user = m.getUser();
 		
 		if (message.contains(irc.getNick()) && user != null ) {
-			Matcher match = IS.matcher(message);
+			Matcher match = ACTION.matcher(message);
+			if (match.matches()) {
+				String trigger = match.group(1);
+				String action = match.group(2);
+				String response = match.group(3);
+				try {
+					this.addNewFact(irc, trigger, response, action, m);
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+				return true;
+			}
+			match = IS.matcher(message);
 			if (match.matches()) {
 				String trigger = match.group(1);
 				String response = match.group(2);
@@ -89,18 +101,6 @@ public class FactoidResponder implements MessageHandler {
 				String trigger = match.group(1);
 				String response = match.group(2);
 				String action = "are";
-				try {
-					this.addNewFact(irc, trigger, response, action, m);
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-				return true;
-			}
-			match = ACTION.matcher(message);
-			if (match.matches()) {
-				String trigger = match.group(1);
-				String action = match.group(2);
-				String response = match.group(3);
 				try {
 					this.addNewFact(irc, trigger, response, action, m);
 				} catch (SQLException e) {

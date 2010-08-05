@@ -39,7 +39,7 @@ public class QueryCommand extends FactoidCommand {
 	 */
 	@Override
 	public boolean checkCommand(Message message, IRCClient irc) {
-		if (message.getMessage().matches(".*[:,] what was that(?:\\?)?$")) {
+		if (message.getMessage().matches(irc.getNick()+"[:,] what was that(?:\\?)?$")) {
 			if (resp.lastID == 0) {
 				message.respondWith("I haven't said anything yet. >_>", irc);
 				return true;

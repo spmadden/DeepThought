@@ -29,24 +29,35 @@ public class ForgetCommand extends FactoidCommand {
 
 	@Override
 	public boolean checkCommand(Message message, IRCClient client) {
-		if (message.getMessage().matches(".*[:,] forget that$")) {
+		if (message.getMessage().matches(client.getNick() + "[:,] forget that$")) {
 			if (message.getUser() != null && !message.getUser().isOpper()) {
 				return false;
 			}
 			Connection conn = Configuration.getInstance().getConn();
 			PreparedStatement ps;
 			try {
+				ps = conn.prepareStatement("select * from factoids where id is ?;");
+				ps.setInt(1, resp.lastID);
+				ps.execute();
+				ResultSet rs = ps.getResultSet();
+				if(rs == null){
+					return false;
+				}
+				String trigger = rs.getString("trigger").replaceAll("%", "");
+				String response = rs.getString("response");
+				
 				ps = conn
 						.prepareStatement("delete from factoids where id is ?;");
 				ps.setInt(1, resp.lastID);
 				ps.execute();
-				message.respondWith("Okay, " + message.getNick(), client);
+				message.respondWith("Okay " +message.getNick()+ ", I forgot that " + trigger + " is "
+						+ response, client);
 				return true;
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-		} else if (message.getMessage().matches(".*[:.] forget #(\\d+)$")) {
-			Matcher m = Pattern.compile(".*[:,] forget #(\\d+)$").matcher(
+		} else if (message.getMessage().matches(client.getNick()+"[:.] forget #(\\d+)$")) {
+			Matcher m = Pattern.compile(client.getNick()+".*[:,] forget #(\\d+)$").matcher(
 					message.getMessage());
 			if (!m.matches()) {
 				return false;
@@ -56,11 +67,22 @@ public class ForgetCommand extends FactoidCommand {
 				Connection conn = Configuration.getInstance().getConn();
 				PreparedStatement ps;
 				try {
+					ps = conn.prepareStatement("select * from factoids where id is ?;");
+					ps.setInt(1, number);
+					ps.execute();
+					ResultSet rs = ps.getResultSet();
+					if(rs == null){
+						return false;
+					}
+					String trigger = rs.getString("trigger").replaceAll("%", "");
+					String response = rs.getString("response");
+					
 					ps = conn
 							.prepareStatement("delete from factoids where id is ?;");
 					ps.setInt(1, number);
 					ps.execute();
-					message.respondWith("Okay, " + message.getNick(), client);
+					message.respondWith("Okay " +message.getNick()+ ", I forgot that " + trigger + " is "
+							+ response, client);
 					return true;
 				} catch (SQLException e) {
 					e.printStackTrace();

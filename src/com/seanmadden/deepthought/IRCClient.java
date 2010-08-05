@@ -168,7 +168,10 @@ public class IRCClient extends Thread {
 						s = s.replaceAll("\\+", "");
 					}
 					log.info(m.getNick() + " HAS LEFT " + m.getTarget());
-					users.get(m.getTarget()).remove(s);
+					Hashtable<String, User> tb = users.get(m.getTarget());
+					if(tb != null){
+						tb.remove(s);
+					}
 				} else if (m.getMethod().equals("QUIT")) {
 					log.info(m.getNick() + " HAS LEFT THE BUILDING");
 					// iterate over all users and remove those with the same
