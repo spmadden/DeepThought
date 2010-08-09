@@ -39,7 +39,7 @@ public class Message {
 	private static Pattern PRIVMSG = Pattern
 			.compile("^:(.+)!(.+) PRIVMSG #(.+?) :(.+)$");
 	private static Pattern PING = Pattern.compile("^PING :(.+)$");
-	private static Pattern MODE = Pattern.compile("^:(.+)!(.+) MODE (.+) (.+) (.+)$");
+	private static Pattern MODE = Pattern.compile("^:(.+)!(.+) MODE (.+?) (.+)$");
 	private static Pattern NICK = Pattern.compile("^:(.+)!(.+) NICK :(.+)$");
 
 	public static Message fromString(String message) {
@@ -97,7 +97,8 @@ public class Message {
 			user = m.group(1);
 			target = m.group(3);
 			method = "MODE";
-			message = m.group(4) + " " + m.group(5);
+			msg = m.group(4);
+			return new Message(user, method, msg, target);
 		}
 		
 
