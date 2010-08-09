@@ -100,6 +100,10 @@ public class IRCClient extends Thread {
 				final Message m = Message.fromString(message);
 				if (m.getMethod().equals("PRIVMSG")) {
 					User u = users.get(m.getTarget()).get(m.getNick());
+					if(u == null){
+						u = new User(m.getNick(), m.getUsermask());
+						users.get(m.getTarget()).put(m.getNick(), u);
+					}
 					m.setUser(u);
 					synchronized (this) {
 						// notify the user object we got a message

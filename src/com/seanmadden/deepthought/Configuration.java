@@ -13,6 +13,7 @@
 package com.seanmadden.deepthought;
 
 import java.sql.*;
+import java.util.Vector;
 
 /**
  * [Insert class description here]
@@ -22,6 +23,7 @@ import java.sql.*;
 public class Configuration {
 	private static Configuration config = new Configuration();
 	private Connection conn = null;
+	private Vector<String> items = new Vector<String>();
 
 	private Configuration() {
 		try {
@@ -41,6 +43,10 @@ public class Configuration {
 	 */
 	public Connection getConn() {
 		return conn;
+	}
+	
+	public Vector<String> getItems(){
+		return items;
 	}
 
 	public static Configuration getInstance() {

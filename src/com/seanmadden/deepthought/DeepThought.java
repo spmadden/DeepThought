@@ -57,6 +57,7 @@ public class DeepThought implements MessageObserver {
 		//this.handlers.add(new LoveResponder());
 		//this.handlers.add(new DanceResponder());
 		//this.handlers.add(new BotsnackResponder());
+		this.handlers.add(new InventoryResponder());
 		this.handlers.add(new FactoidResponder());
 		this.handlers.add(new QuestionResponder());
 		
