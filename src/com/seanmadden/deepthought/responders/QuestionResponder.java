@@ -53,7 +53,7 @@ public class QuestionResponder implements MessageHandler {
 
 		// respond to "xxx or yyyy" // either or
 
-		if (!message.contains(irc.getNick())) {
+		if (!message.matches(irc.getNick()+"[:,].+")) {
 			return false;
 		}
 		if (message.contains("?") && message.toLowerCase().contains(" or ")) {
