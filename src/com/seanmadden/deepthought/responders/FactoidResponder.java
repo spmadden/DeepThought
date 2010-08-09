@@ -45,8 +45,8 @@ public class FactoidResponder implements MessageHandler {
 		}
 	};
 	
-	private Pattern IS = Pattern.compile(".*[:,](.*?) (?:is ?|are ?)(<\\w+>\\s*.+)");
-	private Pattern ACTION = Pattern.compile(".*[:,](.*?)\\s+<(\\w+(?:'t)?)>\\s*(.+)");
+	private Pattern IS = Pattern.compile(".*?[:,](.*?) (?:is ?|are ?)(<\\w+>\\s*.+)");
+	private Pattern ACTION = Pattern.compile(".*?[:,](.*?)\\s+<(\\w+(?:'t)?)>\\s*(.+)");
 
 	public FactoidResponder() {
 		conn = Configuration.getInstance().getConn();
@@ -71,7 +71,7 @@ public class FactoidResponder implements MessageHandler {
 		}
 		User user = m.getUser();
 		
-		if (message.contains(irc.getNick()) && user != null ) {
+		if (message.matches(irc.getNick() + "[:,].+") && user != null ) {
 			Matcher match = IS.matcher(message);
 			if (match.matches()) {
 				String trigger = match.group(1);
