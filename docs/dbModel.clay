@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <clay-model clay-version="2.0.0">
-<database-model author="" begin-script="" end-script="" id="70e41a:12a0f604f5d:-8000" name="dbModel" sql-dialect-id="jp.azzurri.clay.dialect.SQLite_3_5_6_Dialect" version="1.0">
+<database-model author="" begin-script="" end-script="" id="70e41a:12a0f604f5d:-8000" name="dbModel" sql-dialect-id="jp.azzurri.clay.dialect.MySQL_5_0_Dialect" version="1.0">
 <schema-list>
-<schema id="70e41a:12a0f604f5d:-7ffd" name="factoids">
+<schema id="70e41a:12a0f604f5d:-7ffd" name="deepthought">
 <table-list>
 <table id="70e41a:12a0f604f5d:-7fff" name="factoids">
 <column-list>
@@ -15,8 +15,8 @@
 <column auto-increment="false" column-size="0" decimal-digits="0" default-value="" id="70e41a:12a0f604f5d:-7ff8" mandatory="true" name="response">
 <data-type name="TEXT" selected-variant-pattern="TEXT"/>
 </column>
-<column auto-increment="false" column-size="0" decimal-digits="0" default-value="" id="70e41a:12a0f604f5d:-7ff5" mandatory="false" name="submitted_by">
-<data-type name="TEXT" selected-variant-pattern="TEXT"/>
+<column auto-increment="false" column-size="0" decimal-digits="0" default-value="" id="70e41a:12a0f604f5d:-7ff5" mandatory="true" name="submitted_by">
+<data-type name="INTEGER" selected-variant-pattern="INTEGER"/>
 </column>
 <column auto-increment="false" column-size="0" decimal-digits="0" default-value="" id="1daae5b:12a101d7dc6:-7ffb" mandatory="false" name="action">
 <data-type name="TEXT" selected-variant-pattern="TEXT"/>
@@ -25,17 +25,68 @@
 <primary-key id="70e41a:12a0f604f5d:-7ffe" name="PK_FACTOIDS">
 <primary-key-column name="id"/>
 </primary-key>
+<foreign-key-list>
+<foreign-key id="131c544:12a58e6019d:-7fbc" name="FK_factoids_1" on-delete="UNSPECIFIED" on-update="UNSPECIFIED" referenced-key="PK_USERS" referenced-table="Users" referenced-table-schema="deepthought" source-entity-role="" source-multiplicity="0..*" source-relationship-type="" target-entity-role="" target-multiplicity="1" target-relationship-type="">
+<foreign-key-column column-name="submitted_by" referenced-key-column-name="id"/>
+</foreign-key>
+</foreign-key-list>
 </table>
 <table id="1d77475:12a19b41557:-7fff" name="ignored_users">
 <column-list>
 <column auto-increment="true" column-size="0" decimal-digits="0" default-value="" id="1d77475:12a19b41557:-7ffb" mandatory="true" name="id">
 <data-type name="INTEGER" selected-variant-pattern="INTEGER"/>
 </column>
-<column auto-increment="false" column-size="0" decimal-digits="0" default-value="" id="1d77475:12a19b41557:-7ffa" mandatory="false" name="user">
-<data-type name="TEXT" selected-variant-pattern="TEXT"/>
+<column auto-increment="false" column-size="0" decimal-digits="0" default-value="" id="1d77475:12a19b41557:-7ffa" mandatory="true" name="user">
+<data-type name="INTEGER" selected-variant-pattern="INTEGER"/>
 </column>
 </column-list>
 <primary-key id="1d77475:12a19b41557:-7ffe" name="PK_IGNORED_USERS">
+<primary-key-column name="id"/>
+</primary-key>
+<foreign-key-list>
+<foreign-key id="131c544:12a58e6019d:-7fa3" name="FK_ignored_users_1" on-delete="UNSPECIFIED" on-update="UNSPECIFIED" referenced-key="PK_USERS" referenced-table="Users" referenced-table-schema="deepthought" source-entity-role="" source-multiplicity="0..*" source-relationship-type="" target-entity-role="" target-multiplicity="1" target-relationship-type="">
+<foreign-key-column column-name="user" referenced-key-column-name="id"/>
+</foreign-key>
+</foreign-key-list>
+</table>
+<table id="131c544:12a58e6019d:-7ffa" name="Users">
+<column-list>
+<column auto-increment="true" column-size="0" decimal-digits="0" default-value="" id="131c544:12a58e6019d:-7ff6" mandatory="true" name="id">
+<data-type name="INTEGER" selected-variant-pattern="INTEGER"/>
+</column>
+<column auto-increment="false" column-size="0" decimal-digits="0" default-value="" id="131c544:12a58e6019d:-7ff5" mandatory="true" name="nick">
+<data-type name="TEXT" selected-variant-pattern="TEXT"/>
+</column>
+<column auto-increment="false" column-size="0" decimal-digits="0" default-value="" id="131c544:12a58e6019d:-7ff4" mandatory="false" name="usermask">
+<data-type name="TEXT" selected-variant-pattern="TEXT"/>
+</column>
+<column auto-increment="false" column-size="0" decimal-digits="0" default-value="" id="131c544:12a58e6019d:-7ff3" mandatory="false" name="lastmessage">
+<data-type name="TEXT" selected-variant-pattern="TEXT"/>
+</column>
+<column auto-increment="false" column-size="0" decimal-digits="0" default-value="0" id="131c544:12a58e6019d:-7ff2" mandatory="false" name="lastseen">
+<data-type name="INTEGER" selected-variant-pattern="INTEGER"/>
+</column>
+<column auto-increment="false" column-size="0" decimal-digits="0" default-value="0" id="131c544:12a58e6019d:-7f86" mandatory="false" name="karma">
+<data-type name="INTEGER" selected-variant-pattern="INTEGER"/>
+</column>
+</column-list>
+<primary-key id="131c544:12a58e6019d:-7ff9" name="PK_USERS">
+<primary-key-column name="id"/>
+</primary-key>
+</table>
+<table id="131c544:12a58e6019d:-7f85" name="inventory">
+<column-list>
+<column auto-increment="true" column-size="0" decimal-digits="0" default-value="" id="131c544:12a58e6019d:-7f81" mandatory="true" name="id">
+<data-type name="INTEGER" selected-variant-pattern="INTEGER"/>
+</column>
+<column auto-increment="false" column-size="0" decimal-digits="0" default-value="" id="131c544:12a58e6019d:-7f80" mandatory="true" name="item">
+<data-type name="TEXT" selected-variant-pattern="TEXT"/>
+</column>
+<column auto-increment="false" column-size="0" decimal-digits="0" default-value="" id="131c544:12a58e6019d:-7f7f" mandatory="true" name="channel">
+<data-type name="TEXT" selected-variant-pattern="TEXT"/>
+</column>
+</column-list>
+<primary-key id="131c544:12a58e6019d:-7f84" name="PK_INVENTORY">
 <primary-key-column name="id"/>
 </primary-key>
 </table>
@@ -45,6 +96,8 @@
 </database-model>
 <diagram>
 <table-figure refid="70e41a:12a0f604f5d:-7fff" x="159" y="123"/>
-<table-figure refid="1d77475:12a19b41557:-7fff" x="335" y="136"/>
+<table-figure refid="1d77475:12a19b41557:-7fff" x="507" y="143"/>
+<table-figure refid="131c544:12a58e6019d:-7ffa" x="337" y="298"/>
+<table-figure refid="131c544:12a58e6019d:-7f85" x="608" y="304"/>
 </diagram>
 </clay-model>
