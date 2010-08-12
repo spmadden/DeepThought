@@ -28,7 +28,7 @@ public class Configuration {
 	private Configuration() {
 		try {
 			Class.forName("org.sqlite.JDBC");
-			conn = DriverManager.getConnection("jdbc:sqlite:factoids.db");
+			conn = DriverManager.getConnection("jdbc:mysql://seanmadden.net:3306/deepthought?user=deepthought&password=");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
