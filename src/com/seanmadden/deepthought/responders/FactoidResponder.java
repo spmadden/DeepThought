@@ -103,7 +103,7 @@ public class FactoidResponder implements MessageHandler {
 		}*/
 		try {
 			PreparedStatement s = conn
-					.prepareStatement("select count(*) as length from factoids where ? like trigger;");
+					.prepareStatement("select count(*) as length from factoids where ? like `trigger`;");
 			s.setString(1, message);
 			if (!s.execute()) {
 				return false;
@@ -113,12 +113,13 @@ public class FactoidResponder implements MessageHandler {
 			if (set == null) {
 				return false;
 			}
+			set.next();
 			int length = set.getInt("length");
 			if (length <= 0) {
 				return false;
 			}
 
-			s = conn.prepareStatement("select * from factoids where ? like trigger;");
+			s = conn.prepareStatement("select * from factoids where ? like `trigger`;");
 			s.setString(1, message);
 			s.execute();
 			set = s.getResultSet();
@@ -172,7 +173,7 @@ public class FactoidResponder implements MessageHandler {
 	private void addNewFact(IRCClient irc, String trigger, String response,
 			String action, Message m) throws SQLException {
 		PreparedStatement s = conn
-				.prepareStatement("insert into factoids (trigger, response, submitted_by, action) values (?, ?, ?, ?);COMMIT;");
+				.prepareStatement("insert into factoids (`trigger`, `response`, `submitted_by`, `action`) values (?, ?, ?, ?);");
 		s.setString(1, "%" + trigger.trim() + "%");
 		s.setString(2, response.trim());
 		s.setString(3, m.getNick().trim());

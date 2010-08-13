@@ -45,18 +45,19 @@ public class ForgetCommand extends FactoidCommand {
 					}
 					resp.lastID = rs.getInt("id");
 				}
-				ps = conn.prepareStatement("select * from factoids where id is ?;");
+				ps = conn.prepareStatement("select * from factoids where id = ?;");
 				ps.setInt(1, resp.lastID);
 				ps.execute();
 				ResultSet rs = ps.getResultSet();
 				if(rs == null){
 					return false;
 				}
+				rs.next();
 				String trigger = rs.getString("trigger").replaceAll("%", "");
 				String response = rs.getString("response");
 				
 				ps = conn
-						.prepareStatement("delete from factoids where id is ?;");
+						.prepareStatement("delete from factoids where id = ?;");
 				ps.setInt(1, resp.lastID);
 				ps.execute();
 				message.respondWith("Okay " +message.getNick()+ ", I forgot that " + trigger + " is "
@@ -76,18 +77,19 @@ public class ForgetCommand extends FactoidCommand {
 				Connection conn = Configuration.getInstance().getConn();
 				PreparedStatement ps;
 				try {
-					ps = conn.prepareStatement("select * from factoids where id is ?;");
+					ps = conn.prepareStatement("select * from factoids where id = ?;");
 					ps.setInt(1, number);
 					ps.execute();
 					ResultSet rs = ps.getResultSet();
 					if(rs == null){
 						return false;
 					}
+					rs.next();
 					String trigger = rs.getString("trigger").replaceAll("%", "");
 					String response = rs.getString("response");
 					
 					ps = conn
-							.prepareStatement("delete from factoids where id is ?;");
+							.prepareStatement("delete from factoids where id = ?;");
 					ps.setInt(1, number);
 					ps.execute();
 					message.respondWith("Okay " +message.getNick()+ ", I forgot that " + trigger + " is "
