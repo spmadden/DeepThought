@@ -25,8 +25,7 @@
 		<delete dir="${bin}" />
 	</target>
 	<target name="jar" depends="build">
-		<jar destfile="DeepThought.jar" basedir="." >
-			<include name="${bin}" />
+		<jar destfile="DeepThought.jar" basedir="${bin}"  >
 			<manifest>
 				<attribute name="Built-By" value="${user.name}" />
 				<attribute name="Main-Class" value="com.seanmadden.deepthought.DeepThought" />

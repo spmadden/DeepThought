@@ -43,7 +43,7 @@ public class IRCClient extends Thread {
 	private int port = 6667;
 	private String realname = "ImmaBOT";
 	private String host = "LOCALHOST...Duh";
-	private String username = "Bottastic";
+	private String username = "DeepThought";
 	private String nick = "DeepThought";
 	private String identpass = "pdntspa";
 	private Vector<String> channels = new Vector<String>();
