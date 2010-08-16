@@ -1,0 +1,37 @@
+<project name="DeepThought" default="jar" basedir=".">
+	<description>
+		DeepThought is an IRC bot modeled after Bucket and others for the SSE and FactSet IRC Networks.
+	</description>
+	
+	<property name="src" location="src/" />
+	<property name="bin" location="bin/" />
+
+	<target name="build" depends="clean">
+		<unjar src="libs/commons-lang-2.5.jar" dest="${bin}" />
+		<unjar src="libs/sqlite-jdbc-3.6.20.1.jar" dest="${bin}" />
+		<unjar src="libs/hibernate3.jar" dest="${bin}" />
+		<unjar src="libs/JSON.jar" dest="${bin}" />
+		<unjar src="libs/jsoup-1.2.2.jar" dest="${bin}" />
+		<unjar src="libs/mysql-connector-java-5.1.13-bin.jar" dest="${bin}" />
+		<unjar src="libs/log4j-1.2.16.jar" dest="${bin}" />
+
+		<javac
+			srcdir="${src}"
+			destdir="${bin}"
+		/>
+	</target>
+
+	<target name="clean">
+		<delete dir="${bin}" />
+	</target>
+	<target name="jar" depends="build">
+		<jar destfile="DeepThought.jar" basedir="." >
+			<include name="${bin}" />
+			<manifest>
+				<attribute name="Built-By" value="${user.name}" />
+				<attribute name="Main-Class" value="com.seanmadden.deepthought.DeepThought" />
+			</manifest>
+		</jar>
+	</target>
+	
+</project>
