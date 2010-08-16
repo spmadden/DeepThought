@@ -39,7 +39,7 @@ public class IRCClient extends Thread {
 	private BufferedWriter writer = null;
 	private BufferedReader reader = null;
 
-	private String server = "irc.pc.factset.com";
+	private String server = "irc.thesse.org";
 	private int port = 6667;
 	private String realname = "ImmaBOT";
 	private String host = "LOCALHOST...Duh";

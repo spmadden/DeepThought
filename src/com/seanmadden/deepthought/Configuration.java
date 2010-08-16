@@ -28,7 +28,7 @@ public class Configuration {
 	private Configuration() {
 		try {
 			Class.forName("org.sqlite.JDBC");
-			conn = DriverManager.getConnection("jdbc:mysql://seanmadden.net:3306/deepthought?user=deepthought&password=");
+			conn = DriverManager.getConnection("jdbc:mysql://seanmadden.net/deepthought?user=deepthought&password=pdntspa");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
